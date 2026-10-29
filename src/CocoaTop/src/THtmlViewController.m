@@ -1,3 +1,4 @@
+#import "CTLocalization.h"
 #import "THtmlViewController.h"
 #import "BackButtonHandler.h"
 
@@ -6,7 +7,7 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	self.navigationItem.title = self.pageTitle;
+	self.navigationItem.title = CTLocalizedString(self.pageTitle);
 	self.indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 	self.indicator.color = [UIColor blackColor];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.indicator];

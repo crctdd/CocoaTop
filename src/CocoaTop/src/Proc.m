@@ -4,6 +4,8 @@
 #import <mach/mach_interface.h>
 #import <mach/mach_port.h>
 #import "Compat.h"
+#import "CTPreferences.h"
+#import <limits.h>
 #import "Proc.h"
 #import "AppIcon.h"
 #import "sys/proc_info.h"
@@ -24,10 +26,10 @@
 //				[self.cpuhistory insertObject:[NSNumber numberWithUnsignedInt:0] atIndex:0];
 			NSArray *args = [PSProc getArgsByKinfo:ki];
 			char buffer[MAXPATHLEN];
-			if (proc_pidpath(self.pid, buffer, sizeof(buffer)))
+			self.executable = nil;
+			if (proc_pidpath(self.pid, buffer, sizeof(buffer)) > 0)
 				self.executable = [NSString stringWithUTF8String:buffer];
-			else
-				self.executable = args[0];
+			if (!self.executable) self.executable = args[0];
 			self.args = @"";
 			for (int i = 1; i < args.count; i++)
 				self.args = [self.args stringByAppendingFormat:@" %@", args[i]];
@@ -37,7 +39,7 @@
 			memset(&netstat, 0, sizeof(netstat));
 			memset(&netstat_cache, 0, sizeof(netstat_cache));
 			memset(&rusage, 0, sizeof(rusage));
-			NSString *firslCol = [[NSUserDefaults standardUserDefaults] stringForKey:@"FirstColumnStyle"];
+			NSString *firslCol = [[CTPreferences standardUserDefaults] stringForKey:@"FirstColumnStyle"];
 			if (self.app) {
 				NSString *ident = self.app[@"CFBundleIdentifier"];
 				if (ident)
@@ -147,7 +149,7 @@ unsigned int mach_thread_priority(thread_t thread, policy_t policy)
 	// Open files count
 	self.files = self.socks = 0;
 	int bufSize = proc_pidinfo(self.pid, PROC_PIDLISTFDS, 0, 0, 0);
-	if (bufSize > 0) {
+	if (bufSize > 0 && bufSize <= INT_MAX / 2) {
 		bufSize *= 2;
 		struct proc_fdinfo *fdinfo = (struct proc_fdinfo *)malloc(bufSize);
 		if (fdinfo) {
@@ -194,6 +196,7 @@ unsigned int mach_thread_priority(thread_t thread, policy_t policy)
 	memcpy(&events_prev, &events, sizeof(events_prev));
 	memset(&basic, 0, sizeof(basic));
 	self.threads = 0;
+	self.ports = 0;
 	self.prio = 0;
 	self.pcpu = 0;
 	self.ptime = 0;
@@ -288,11 +291,10 @@ unsigned int mach_thread_priority(thread_t thread, policy_t policy)
 				unsigned int prio = mach_thread_priority(thread_list[j], tbi.policy);
 				// Actual process priority will be the largest priority of a thread
 				if (self.prio < prio) self.prio = prio;
+				// Only derive state when thread_info actually initialized tbi.
+				proc_state_t thstate = mach_state_order(&tbi);
+				if (self.state > thstate) self.state = thstate;
 			}
-			// Task state is formed from all thread states
-			proc_state_t thstate = mach_state_order(&tbi);
-			if (self.state > thstate)
-				self.state = thstate;
 			mach_port_deallocate(mach_task_self(), thread_list[j]);
 		}
 		// Deallocate the list of threads
@@ -307,46 +309,43 @@ unsigned int mach_thread_priority(thread_t thread, policy_t policy)
 
 + (NSArray *)getArgsByKinfo:(struct kinfo_proc *)ki
 {
-	NSArray		*args = nil;
-	int			nargs, c = 0;
-	static int	argmax = 0;
-	char		*argsbuf, *sp, *cp;
-	int			mib[3] = {CTL_KERN, KERN_PROCARGS2, ki->kp_proc.p_pid};
-	size_t		size;
-
-	if (!argmax) {
-		int mib2[2] = {CTL_KERN, KERN_ARGMAX};
-		size = sizeof(argmax);
-		if (sysctl(mib2, 2, &argmax, &size, NULL, 0) < 0)
-			argmax = 1024;
-	}
-	// Allocate process environment buffer
-	argsbuf = (char *)malloc(argmax);
-	if (argsbuf) {
-		size = (size_t)argmax;
-		if (sysctl(mib, 3, argsbuf, &size, NULL, 0) == 0) {
-			// Skip args count
-			nargs = *(int *)argsbuf;
-			cp = argsbuf + sizeof(nargs);
-			// Skip exec_path and trailing nulls
-			for (; cp < &argsbuf[size]; cp++)
-				if (!*cp) break;
-			for (; cp < &argsbuf[size]; cp++)
-				if (*cp) break;
-			for (sp = cp; cp < &argsbuf[size] && c < nargs; cp++)
-				if (*cp == '\0') c++;
-			while (sp < cp && sp[0] == '/' && sp[1] == '/') sp++;
-			if (sp != cp) {
-				args = [[[NSString alloc] initWithBytes:sp length:(cp-sp) encoding:NSUTF8StringEncoding]
-					componentsSeparatedByString:@"\0"];
-			}
-		}
-		free(argsbuf);
-	}
-	if (args)
-		return args;
-	ki->kp_proc.p_comm[MAXCOMLEN] = 0;	// Just in case
-	return [NSArray arrayWithObject:[NSString stringWithFormat:@"(%s)", ki->kp_proc.p_comm]];
+    static int argmax;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        int mib[2] = { CTL_KERN, KERN_ARGMAX };
+        size_t size = sizeof(argmax);
+        if (sysctl(mib, 2, &argmax, &size, NULL, 0) || argmax < (int)sizeof(int) || argmax > 16 * 1024 * 1024)
+            argmax = 1024;
+    });
+    NSMutableArray *args = [NSMutableArray array];
+    char *buffer = malloc((size_t)argmax);
+    if (buffer) {
+        size_t size = (size_t)argmax;
+        int mib[3] = { CTL_KERN, KERN_PROCARGS2, ki->kp_proc.p_pid };
+        if (!sysctl(mib, 3, buffer, &size, NULL, 0) && size >= sizeof(int) && size <= (size_t)argmax) {
+            int nargs;
+            memcpy(&nargs, buffer, sizeof(nargs));
+            char *end = buffer + size;
+            char *cursor = buffer + sizeof(nargs);
+            char *nul = memchr(cursor, 0, (size_t)(end - cursor));
+            if (nul && nargs > 0 && (size_t)nargs <= size) {
+                cursor = nul + 1;
+                while (cursor < end && !*cursor) cursor++;
+                for (int i = 0; i < nargs && cursor < end; i++) {
+                    nul = memchr(cursor, 0, (size_t)(end - cursor));
+                    if (!nul) break;
+                    NSString *arg = [[NSString alloc] initWithBytes:cursor length:(NSUInteger)(nul - cursor) encoding:NSUTF8StringEncoding];
+                    if (!arg) break;
+                    if (!i) while ([arg hasPrefix:@"//"]) arg = [arg substringFromIndex:1];
+                    [args addObject:arg];
+                    cursor = nul + 1;
+                }
+            }
+        }
+        free(buffer);
+    }
+    if (args.count) return args;
+    return @[[NSString stringWithFormat:@"(%.*s)", MAXCOMLEN, ki->kp_proc.p_comm]];
 }
 
 @end

@@ -3,5 +3,7 @@
 #import "AppDelegate.h"
 
 int main(int argc, char *argv[]) {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([TopAppDelegate class]));
+    @autoreleasepool {
+        return UIApplicationMain(argc, argv, nil, NSStringFromClass([TopAppDelegate class]));
+    }
 }

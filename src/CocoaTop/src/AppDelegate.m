@@ -66,7 +66,7 @@
     #if !TARGET_IPHONE_SIMULATOR
     if (![[RootHelperManager sharedManager] startHelperWithPath: helperPath error: &error]) {
         NSLog(@"Error loading: %@", error);
-        [[UIApplication sharedApplication] performSelector:@selector(suspend)];
+        // Keep the GUI visible so installation/permission failures are diagnosable.
     }
     #endif
     
@@ -77,6 +77,19 @@
 	// Set the navigation controller as the window's root view controller and display.
 	self.window.rootViewController = self.navigationController;
 	[self.window makeKeyAndVisible];
+    if (error) {
+        NSError *startupError = error;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL chinese = [[NSLocale preferredLanguages].firstObject.lowercaseString hasPrefix:@"zh-hans"];
+            NSString *message = [NSString stringWithFormat:chinese ?
+                @"无法启动进程助手（错误 %ld）。请确认安装包与越狱环境匹配，且 CocoaTop-helper 由 root 所有、权限为 4755。\n%@" :
+                @"Process helper failed (error %ld). Check the package environment and root ownership / mode 4755 of CocoaTop-helper.\n%@",
+                (long)startupError.code, startupError.localizedDescription];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"CocoaTop" message:message preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:chinese ? @"确定" : @"OK" style:UIAlertActionStyleDefault handler:nil]];
+            [self.navigationController presentViewController:alert animated:YES completion:nil];
+        });
+    }
 	return YES;
 }
 /*

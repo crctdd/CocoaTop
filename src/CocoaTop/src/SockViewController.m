@@ -1,3 +1,5 @@
+#import "CTPreferences.h"
+#import "CTLocalization.h"
 #import "Compat.h"
 #import "SockViewController.h"
 #import "GridCell.h"
@@ -33,7 +35,7 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		viewMode = self.popupMenuSelected = item;
 		socks = [PSSockArray psSockArrayWithProc:proc];
 		[self configureMode];
-		[[NSUserDefaults standardUserDefaults] setInteger:viewMode forKey:@"ProcInfoMode"];
+		[[CTPreferences standardUserDefaults] setInteger:viewMode forKey:@"ProcInfoMode"];
 		[self refreshSocks:nil];
 	}
 }
@@ -67,7 +69,7 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		CGSize size = [UIApplication sharedApplication].statusBarFrame.size;
 		CGFloat slide = MIN(size.width, size.height) +
 			self.navigationController.navigationBar.frame.size.height +
-			([[NSUserDefaults standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
+			([[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
 		CGPoint contentOffset = self.tableView.contentOffset;
 		contentOffset.y += fullScreen ? -slide : slide;
 		[self.tableView setContentOffset:contentOffset animated:NO];
@@ -82,13 +84,15 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	//self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
+	//self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CTLocalizedString(@"Back")
 	//	style: UIBarButtonItemStyleDone target:self action:@selector(backWithoutAnimation)];
 
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CTLocalizedString(@"Back")
         style: UIBarButtonItemStyleDone target:self action:@selector(backWithoutAnimation)];
-	viewMode = [[NSUserDefaults standardUserDefaults] integerForKey:@"ProcInfoMode"];
-	NSMutableArray *modeItems = [NSMutableArray arrayWithObjects:ColumnModeName count:ColumnModes];
+	viewMode = [[CTPreferences standardUserDefaults] integerForKey:@"ProcInfoMode"];
+	NSMutableArray *modeItems = [NSMutableArray array];
+	for (NSUInteger mode = 0; mode < ColumnModes; mode++)
+		[modeItems addObject:CTLocalizedString(ColumnModeName[mode])];
 	modeItems[ColumnModeThreads] = [modeItems[ColumnModeThreads] stringByAppendingFormat:@" (%u)", proc.threads];
 	modeItems[ColumnModeFiles  ] = [modeItems[ColumnModeFiles  ] stringByAppendingFormat:@" (%u)", proc.files];
 	modeItems[ColumnModePorts  ] = [modeItems[ColumnModePorts  ] stringByAppendingFormat:@" (%u)", proc.ports];
@@ -155,7 +159,7 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		if (socks.count)
 			[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
 				atScrollPosition:UITableViewScrollPositionNone animated:NO];
-	} else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"AutoJumpNewProcess"]) {
+	} else if ([[CTPreferences standardUserDefaults] boolForKey:@"AutoJumpNewProcess"]) {
 		// If there's a new socket, scroll to it
 		NSUInteger
 			idx = [socks indexOfDisplayed:ProcDisplayStarted];
@@ -178,8 +182,8 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		sortDescending = sortColumn == col ? !sortDescending : col.style & ColumnStyleSortDesc;
 		[header sortColumnOld:sortColumn New:col desc:sortDescending];
 		sortColumn = col;
-		[[NSUserDefaults standardUserDefaults] setInteger:col.tag forKey:[NSString stringWithFormat:@"Mode%dSortColumn", viewMode]];
-		[[NSUserDefaults standardUserDefaults] setBool:sortDescending forKey:[NSString stringWithFormat:@"Mode%dSortDescending", viewMode]];
+		[[CTPreferences standardUserDefaults] setInteger:col.tag forKey:[NSString stringWithFormat:@"Mode%dSortColumn", viewMode]];
+		[[CTPreferences standardUserDefaults] setBool:sortDescending forKey:[NSString stringWithFormat:@"Mode%dSortDescending", viewMode]];
 		[timer fire];
 		break;
 	}
@@ -192,13 +196,13 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 	columns = [PSColumn psGetTaskColumnsWithWidth:self.tableView.bounds.size.width mode:viewMode];
 	// Find sort column and create table header
 	NSString *key = [NSString stringWithFormat:@"Mode%dSortColumn", viewMode];
-	sortColumn = [PSColumn psTaskColumnWithTag:[[NSUserDefaults standardUserDefaults] integerForKey:key] forMode:viewMode];
+	sortColumn = [PSColumn psTaskColumnWithTag:[[CTPreferences standardUserDefaults] integerForKey:key] forMode:viewMode];
 	if (!sortColumn) {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-		sortColumn = [PSColumn psTaskColumnWithTag:[[NSUserDefaults standardUserDefaults] integerForKey:key] forMode:viewMode];
+		[[CTPreferences standardUserDefaults] removeObjectForKey:key];
+		sortColumn = [PSColumn psTaskColumnWithTag:[[CTPreferences standardUserDefaults] integerForKey:key] forMode:viewMode];
 		if (!sortColumn) sortColumn = columns[0];
 	}
-	sortDescending = [[NSUserDefaults standardUserDefaults] boolForKey:[NSString stringWithFormat:@"Mode%dSortDescending", viewMode]];
+	sortDescending = [[CTPreferences standardUserDefaults] boolForKey:[NSString stringWithFormat:@"Mode%dSortDescending", viewMode]];
 	header = [GridHeaderView headerWithColumns:columns size:CGSizeMake(0, self.tableView.sectionHeaderHeight)];
 	[header sortColumnOld:nil New:sortColumn desc:sortDescending];
 	[header addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(sortHeader:)]];
@@ -223,7 +227,7 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
     procName = [proc.executable lastPathComponent];
     [self configureMode];
     // Refresh interval
-    timerInterval = [[NSUserDefaults standardUserDefaults] floatForKey:@"UpdateInterval"];
+    timerInterval = [[CTPreferences standardUserDefaults] floatForKey:@"UpdateInterval"];
     [self refreshSocks:nil];
 }
 
@@ -350,7 +354,7 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 					  (viewMode == ColumnModeModules) ? sock.name : sock.description;
 	if (viewMode == ColumnModePorts)
 		message = [[message stringByReplacingOccurrencesOfString:@" <" withString:@"\n<"] stringByReplacingOccurrencesOfString:@" >" withString:@"\n>"];
-	[[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+	[[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:CTLocalizedString(@"OK") otherButtonTitles:nil] show];
 }
 
 #pragma mark -

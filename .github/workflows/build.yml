@@ -1,65 +1,123 @@
-name: CI
+name: Build CocoaTop
 
-on: [push]
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Package environment
+        type: choice
+        default: all
+        options: [all, rootless, roothide]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cocoatop-${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment || 'all' }}
+  cancel-in-progress: true
 
 jobs:
   build:
-
-    runs-on: macOS-latest
-
+    name: ${{ matrix.scheme }} (iOS 15+)
+    runs-on: macos-15
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scheme: rootless
+            repository: theos/theos
+            revision: 6e7b8c40e0f5f9f5b2377800dc1e42cd2560d24a
+          - scheme: roothide
+            repository: roothide/theos
+            revision: 3ac89c984ec652fd16bcd91b33ae16de45ce76fa
+    defaults:
+      run:
+        shell: bash
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    
-    - name: prepare environment
-      run: |
-        brew install ldid make
-        echo "THEOS=/Users/runner/work/CocoaTop/CocoaTop/theos" >> $GITHUB_ENV
-        echo "PATH=/usr/local/opt/make/libexec/gnubin:$PATH" >> $GITHUB_ENV
-        
-    
-    - name: verify updated cache
-      id: verify-cache
-      run: |
-        echo "::set-output name=heads::`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1`"
+      - name: Checkout source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-    - name: use cache
-      id: cache
-      uses: actions/cache@v2
-      with:
-        path: /Users/runner/work/CocoaTop/CocoaTop/theos
-        key: ${{ runner.os }}-${{ steps.verify-cache.outputs.heads }}
+      - name: Select environment
+        id: selection
+        env:
+          REQUESTED: ${{ github.event.inputs.environment || 'all' }}
+          SCHEME: ${{ matrix.scheme }}
+        run: |
+          if [[ "$REQUESTED" == all || "$REQUESTED" == "$SCHEME" ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+          fi
 
-    - name: get theos
-      if: steps.cache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-        path: 'theos'
-        repository: theos/theos
+      - name: Checkout reviewed Theos revision
+        if: steps.selection.outputs.enabled == 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ matrix.repository }}
+          ref: ${{ matrix.revision }}
+          path: .ci/theos
+          submodules: recursive
+          persist-credentials: false
 
-    - name: get sdks
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: |
-        curl -LO https://github.com/xybp888/iOS-SDKs/archive/master.zip
-        TMP=$(mktemp -d)
-        unzip -q master.zip -d $TMP
-        if [ ! -d "/Users/runner/work/CocoaTop/CocoaTop/theos/sdks" ]; then
-          mkdir /Users/runner/work/CocoaTop/CocoaTop/theos/sdks
-        fi
-        mv $TMP/iOS-SDKs-master/*.sdk /Users/runner/work/CocoaTop/CocoaTop/theos/sdks
-        rm -r master.zip $TMP
+      - name: Checkout patched SDK at reviewed revision
+        if: steps.selection.outputs.enabled == 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: theos/sdks
+          ref: 0222fd5413cf4b9af096f37b4621afa2688572f7
+          path: .ci/sdks
+          sparse-checkout: iPhoneOS16.5.sdk
+          persist-credentials: false
 
-    - name: actual build
-      run: |
-        cd src
-        mkdir -p packages
-        rm -f packages/*
-        make package FINALPACKAGE=1
+      - name: Prepare and record build tools
+        if: steps.selection.outputs.enabled == 'true'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+          HOMEBREW_NO_INSTALL_CLEANUP: '1'
+          SCHEME: ${{ matrix.scheme }}
+        run: |
+          set -euo pipefail
+          brew install make ldid dpkg
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+          echo "THEOS=$GITHUB_WORKSPACE/.ci/theos" >> "$GITHUB_ENV"
+          mkdir -p .ci/theos/sdks "dist/$SCHEME"
+          test -d .ci/sdks/iPhoneOS16.5.sdk
+          ln -s "$GITHUB_WORKSPACE/.ci/sdks/iPhoneOS16.5.sdk" .ci/theos/sdks/iPhoneOS16.5.sdk
+          {
+            sw_vers
+            xcodebuild -version
+            xcrun clang --version
+            brew list --versions make ldid dpkg
+            git rev-parse HEAD
+            git -C .ci/theos rev-parse HEAD
+            git -C .ci/theos submodule status --recursive
+            git -C .ci/sdks rev-parse HEAD
+          } | tee "dist/$SCHEME/toolchain.txt"
 
-    - name: upload deb
-      uses: actions/upload-artifact@v2.2.0
-      with:
-        name: 'Package'
-        path: ${{ github.workspace }}/src/packages/*.deb
+      - name: Static checks
+        if: steps.selection.outputs.enabled == 'true'
+        run: |
+          bash -n scripts/build.sh
+          python3 -c 'import ast,pathlib,plistlib; [ast.parse(p.read_text()) for p in pathlib.Path("scripts").glob("*.py")]; [plistlib.loads(p.read_bytes()) for p in [pathlib.Path("src/CocoaTop/Info.plist"),pathlib.Path("src/CocoaTop/entitlements.xml"),pathlib.Path("src/CocoaTop-helper/Ent.plist")]]'
+          python3 scripts/audit-localization.py
+          git diff --check
+
+      - name: Build and audit deb
+        if: steps.selection.outputs.enabled == 'true'
+        env:
+          SCHEME: ${{ matrix.scheme }}
+        run: bash scripts/build.sh "$SCHEME"
+
+      - name: Upload environment package and evidence
+        if: always() && steps.selection.outputs.enabled == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: CocoaTop-${{ matrix.scheme }}-${{ github.run_number }}
+          path: dist/${{ matrix.scheme }}/
+          if-no-files-found: error
+          retention-days: 14

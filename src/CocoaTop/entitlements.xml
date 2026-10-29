@@ -6,7 +6,7 @@
     <true/>
     <key>com.apple.private.security.no-sandbox</key>
     <true/>
-    <key>com.apple.private.persona-mgmt</key>
+    <key>com.apple.private.security.storage.AppBundles</key>
     <true/>
     <key>platform-application</key>
     <true/>

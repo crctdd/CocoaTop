@@ -1,27 +1,9 @@
-TARGET  = CocoaTop-helper
-OUTDIR ?= bin
+include $(THEOS)/makefiles/common.mk
 
-CC      = xcrun -sdk iphoneos cc -arch arm64
-LDID    = ldid
-CFLAGS  = -Wall
+TOOL_NAME = CocoaTop-helper
+CocoaTop-helper_FILES = RootWrapper.c
+CocoaTop-helper_CFLAGS = -Wall -Wextra
+CocoaTop-helper_CODESIGN_FLAGS = -SEnt.plist
+CocoaTop-helper_INSTALL_PATH = /Applications/CocoaTop.app
 
-.PHONY: clean all 
-
-all: clean $(OUTDIR)/$(TARGET)
-
-DEBUG ?= 0
-ifeq ($(DEBUG), 1)
-    CFLAGS +=
-else
-    CFLAGS += -O2
-endif
-
-$(OUTDIR):
-	mkdir -p $(OUTDIR)
-
-$(OUTDIR)/$(TARGET): RootWrapper.c | $(OUTDIR)
-	$(CC) -o $@ $^ $(CFLAGS)
-	$(LDID) -SEnt.plist $@
-
-clean:
-	rm -f $(OUTDIR)/$(TARGET)
+include $(THEOS_MAKE_PATH)/tool.mk

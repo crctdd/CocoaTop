@@ -16,36 +16,26 @@ int sort_procs_by_pid(const void *p1, const void *p2)
 - (instancetype)initProcInfoSort:(BOOL)sort
 {
     self = [super init];
-    self->kp = 0;
-    self->count = 0;
-    
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    
-    [[RootHelperManager sharedManager] sendCommand: @"getprocs" completion:^(NSString * _Nullable stdoutString,
-                                                                             NSString * _Nullable stderrString,
-                                                                             NSInteger exitCode) {
-        NSInteger value = [stdoutString integerValue];
-        self->count = value;
-        self->kp = [[RootHelperManager sharedManager]kp];
-        dispatch_semaphore_signal(sema);
-    }];
-    
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
-    size_t bufSize = self->count * sizeof(struct kinfo_proc);
-
-	self->count = bufSize / sizeof(struct kinfo_proc);
-	if (sort)
-		qsort(self->kp, self->count, sizeof(*kp), sort_procs_by_pid);
-    if (@available(iOS 11, *)) {
-    } else if (@available(iOS 10, *)) {
-        if (self->kp[self->count - 1].kp_proc.p_pid == 1) {
-                static int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, 0 };
-                size_t length = sizeof(struct kinfo_proc);
-                sysctl(mib, 4, &self->kp[self->count++], &length, NULL, 0);
-        }
+    if (!self) return nil;
+    NSError *error = nil;
+    NSData *snapshot = [[RootHelperManager sharedManager] processSnapshotWithError:&error];
+    if (!snapshot) {
+        NSLog(@"CocoaTop process snapshot failed: %@", error);
+        return nil;
     }
-	return self;
+    count = snapshot.length / sizeof(*kp);
+    if (snapshot.length) {
+        kp = malloc(snapshot.length);
+        if (!kp) return nil;
+        memcpy(kp, snapshot.bytes, snapshot.length);
+    }
+    if (sort && count > 1) qsort(kp, count, sizeof(*kp), sort_procs_by_pid);
+    return self;
+}
+
+- (void)dealloc
+{
+    free(kp);
 }
 
 + (instancetype)psProcInfoSort:(BOOL)sort
@@ -80,17 +70,19 @@ int sort_procs_by_pid(const void *p1, const void *p2)
 	mach_port_t host_port = mach_host_self();
 	mach_msg_type_number_t host_size = HOST_VM_INFO64_COUNT;
 	vm_statistics64_data_t vm_stat;
-	vm_size_t pagesize;
+	vm_size_t pagesize = 0;
 
-	host_page_size(host_port, &pagesize);
-	if (host_statistics64(host_port, HOST_VM_INFO64, (host_info_t)&vm_stat, &host_size) == KERN_SUCCESS) {
+	if (host_page_size(host_port, &pagesize) == KERN_SUCCESS &&
+		host_statistics64(host_port, HOST_VM_INFO64, (host_info_t)&vm_stat, &host_size) == KERN_SUCCESS) {
 //		self.memUsed = (vm_stat.active_count + vm_stat.inactive_count + vm_stat.wire_count) * pagesize;
 //#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
 //		self.memUsed += vm_stat.compressor_page_count * pagesize;
 //#endif
-		self.memFree = vm_stat.free_count * pagesize;
+		uint64_t freeBytes = (uint64_t)vm_stat.free_count * pagesize;
+		self.memFree = MIN(freeBytes, self.memTotal);
 		self.memUsed = self.memTotal - self.memFree;
 	}
+	mach_port_deallocate(mach_task_self(), host_port);
 /*
 	host_cpu_load_info_data_t cpu_stat;
 	host_size = HOST_CPU_LOAD_INFO_COUNT;
@@ -109,6 +101,9 @@ int sort_procs_by_pid(const void *p1, const void *p2)
             mobileuid = mobile->pw_uid;
         }
 	}
+	// Acquire first: helper failure must not mark every displayed process terminated.
+	PSProcInfo *procs = [PSProcInfo psProcInfoSort:NO];
+	if (!procs) return -1;
 	// Reset totals
 	self.totalCpu = self.threadCount = self.portCount = self.machCalls = self.unixCalls = self.switchCount = self.runningCount = self.mobileCount = self.guiCount = 0;
 	// Remove terminated processes
@@ -117,10 +112,7 @@ int sort_procs_by_pid(const void *p1, const void *p2)
 	}]];
 	[self setAllDisplayed:ProcDisplayTerminated];
 	// Get process list and update the procs array
-	PSProcInfo *procs = [PSProcInfo psProcInfoSort:NO];
-
 	for (int i = 0; i < procs->count; i++) {
-        struct kinfo_proc kp = procs->kp[i];
 		PSProc *proc = [self procForPid:procs->kp[i].kp_proc.p_pid];
 		if (!proc) {
 			proc = [PSProc psProcWithKinfo:&procs->kp[i] iconSize:self.iconSize];

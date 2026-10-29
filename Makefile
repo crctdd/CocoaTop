@@ -1,23 +1,20 @@
-ARCHS = arm64
-TARGET = iphone:clang:18.4:12.0
-APPLICATION_NAME = CocoaTop
-
-.PHONY: build-subprojects
-
-#DEBUG = 0
-#FINALPACKAGE = 1
-#PACKAGE_VERSION = $(THEOS_PACKAGE_BASE_VERSION)
+TARGET ?= iphone:clang:16.5:15.0
+THEOS_PACKAGE_SCHEME ?= rootless
+ifeq ($(THEOS_PACKAGE_SCHEME),roothide)
+ARCHS ?= arm64e
+else ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
+ARCHS ?= arm64 arm64e
+else
+$(error Only rootless and roothide packages are supported)
+endif
+DEBUG = 0
+FINALPACKAGE = 1
+export TARGET ARCHS DEBUG FINALPACKAGE THEOS_PACKAGE_SCHEME
 
 include $(THEOS)/makefiles/common.mk
-SUBPROJECTS += src/CocoaTop
+SUBPROJECTS += src/CocoaTop-helper src/CocoaTop
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
-build-subprojects:
-	@$(MAKE) -C src/CocoaTop-helper all
-
-ipa: build-subprojects package
-	@mkdir -p .theos/_tmp/build/Payload
-	@cp -r .theos/_/Applications/* .theos/_tmp/build/Payload
-	@cd .theos/_tmp/build/ && zip -r ../../../packages/$(APPLICATION_NAME).tipa Payload
-	@cd ../../../..
-	@echo "[+] Done! IPA created"
+after-stage::
+	chmod 0755 "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app/CocoaTop"
+	chmod 4755 "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app/CocoaTop-helper"

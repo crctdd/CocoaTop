@@ -1,3 +1,5 @@
+#import "CTPreferences.h"
+#import "CTLocalization.h"
 #import "Compat.h"
 #import "Column.h"
 #import "Proc.h"
@@ -86,16 +88,16 @@ NSString *psPortRightsString(uint32_t rights)
 NSString *psTaskRoleString(PSProc *proc)
 {
 	switch (proc.role) {
-	case TASK_RENICED:					return @"Reniced";
+	case TASK_RENICED:					return CTLocalizedString(@"Reniced");
 	case TASK_UNSPECIFIED:				return @"-";
-	case TASK_FOREGROUND_APPLICATION:	return @"Foreground";
-	case TASK_BACKGROUND_APPLICATION:	return @"Background";
-	case TASK_CONTROL_APPLICATION:		return @"Controller";
-	case TASK_GRAPHICS_SERVER:			return @"GfxServer";
-	case TASK_THROTTLE_APPLICATION:		return @"Throttle";
-	case TASK_NONUI_APPLICATION:		return @"Inactive";
-	case TASK_DEFAULT_APPLICATION:		return @"Default";
-	default:							return @"Unknown";
+	case TASK_FOREGROUND_APPLICATION:	return CTLocalizedString(@"Foreground");
+	case TASK_BACKGROUND_APPLICATION:	return CTLocalizedString(@"Background");
+	case TASK_CONTROL_APPLICATION:		return CTLocalizedString(@"Controller");
+	case TASK_GRAPHICS_SERVER:			return CTLocalizedString(@"GfxServer");
+	case TASK_THROTTLE_APPLICATION:		return CTLocalizedString(@"Throttle");
+	case TASK_NONUI_APPLICATION:		return CTLocalizedString(@"Inactive");
+	case TASK_DEFAULT_APPLICATION:		return CTLocalizedString(@"Default");
+	default:							return CTLocalizedString(@"Unknown");
 	}
 }
 
@@ -198,7 +200,7 @@ NSString *psProcessCpuTime(unsigned int ptime)
 
 + (NSMutableArray *)psGetShownColumnsWithWidth:(NSUInteger)width
 {
-	NSArray *columnOrder = [[NSUserDefaults standardUserDefaults] arrayForKey:@"Columns"];
+	NSArray *columnOrder = [[CTPreferences standardUserDefaults] arrayForKey:@"Columns"];
 	NSMutableArray *shownCols = [NSMutableArray array];
 	PSColumn *extendedcol = nil;
 	// Sanity check
@@ -343,9 +345,9 @@ NSString *psProcessCpuTime(unsigned int ptime)
 	style:(column_style_t)style data:(PSColumnData)data floatData:(PSColumnFloat)floatData sort:(NSComparator)sort summary:(PSColumnData)summary color:(PSColumnColor)color descr:(NSString *)descr
 {
 	if (self = [super init]) {
-		self.name = name;
-		self.fullname = fullname;
-		self.descr = descr;
+		self.name = CTLocalizedString(name);
+		self.fullname = CTLocalizedString(fullname);
+		self.descr = CTLocalizedString(descr);
 		self.align = align;
 		self.minwidth = self.width = width;
 		self.getData = data;

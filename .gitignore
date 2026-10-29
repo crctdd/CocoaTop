@@ -13,3 +13,9 @@
 /src/CocoaTop/CocoaTop.xcodeproj/project.xcworkspace/xcuserdata
 /packages
 /src/CocoaTop-helper/bin
+/dist/
+/.build-packages/
+/.ci/
+/src/CocoaTop/.theos/
+/src/CocoaTop-helper/.theos/
+__pycache__/

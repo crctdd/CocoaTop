@@ -1,4 +1,5 @@
 #import "Compat.h"
+#import "CTPreferences.h"
 #import <mach/mach_time.h>
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0
@@ -38,9 +39,12 @@
 uint64_t mach_time_to_milliseconds(uint64_t mach_time)
 {
 	static mach_timebase_info_data_t timebase = {0};
-	if (!timebase.denom)
-		mach_timebase_info(&timebase);
-	return mach_time * timebase.numer / timebase.denom / 1000000;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{ mach_timebase_info(&timebase); });
+	if (!timebase.denom) return 0;
+	// Multiply before division without wrapping long-running process counters.
+	__uint128_t milliseconds = (__uint128_t)mach_time * timebase.numer / timebase.denom / 1000000;
+	return milliseconds > UINT64_MAX ? UINT64_MAX : (uint64_t)milliseconds;
 }
 
 
@@ -72,7 +76,7 @@ uint64_t mach_time_to_milliseconds(uint64_t mach_time)
 		target = [results copy];
 	});
 	path = [path stringByStandardizingPath];
-	if (![path hasPrefix:@"/"] || ![[NSUserDefaults standardUserDefaults] boolForKey:@"ShortenPaths"])
+	if (![path hasPrefix:@"/"] || ![[CTPreferences standardUserDefaults] boolForKey:@"ShortenPaths"])
 		return path;
 	// Replace link targets with symlinks
 	for (int i = 0; i < target.count; i++) {

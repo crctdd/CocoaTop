@@ -1,3 +1,5 @@
+#import "CTPreferences.h"
+#import "CTLocalization.h"
 #import "Compat.h"
 #import "RootViewController.h"
 #import "SockViewController.h"
@@ -39,8 +41,8 @@
 	switch (item) {
 	case 0: view = [[SetupViewController alloc] initWithStyle:UITableViewStyleGrouped]; break;
 	case 1: view = [[SetupColsViewController alloc] initWithStyle:UITableViewStyleGrouped]; break;
-	case 2: view = [[HtmlViewController alloc] initWithURL:@"guide" title:@"Quick Guide"]; break;
-	case 3: view = [[HtmlViewController alloc] initWithURL:@"story" title:@"The Story"]; break;
+	case 2: view = [[HtmlViewController alloc] initWithURL:@"guide" title:CTLocalizedString(@"Quick Guide")]; break;
+	case 3: view = [[HtmlViewController alloc] initWithURL:@"story" title:CTLocalizedString(@"The Story")]; break;
 	}
 	if (view)
 		[self.navigationController pushViewController:view animated:YES];
@@ -74,7 +76,7 @@
 		CGSize size = [UIApplication sharedApplication].statusBarFrame.size;
 		CGFloat slide = MIN(size.width, size.height) +
 			self.navigationController.navigationBar.frame.size.height +
-			([[NSUserDefaults standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
+			([[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
 		CGPoint contentOffset = self.tableView.contentOffset;
 		contentOffset.y += fullScreen ? -slide : slide;
 		[self.tableView setContentOffset:contentOffset animated:NO];
@@ -91,7 +93,7 @@
 	[super viewDidLoad];
 	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
 	bool isPhone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-	[self popupMenuWithItems:@[@"Settings", @"Columns", @"Quick Guide", @"About"] selected:-1 aligned:UIControlContentHorizontalAlignmentLeft];
+	[self popupMenuWithItems:@[CTLocalizedString(@"Settings"), CTLocalizedString(@"Columns"), CTLocalizedString(@"Quick Guide"), CTLocalizedString(@"About")] selected:-1 aligned:UIControlContentHorizontalAlignmentLeft];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarHamburger"] style:UIBarButtonItemStylePlain
 		target:self action:@selector(popupMenuToggle)];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
@@ -129,7 +131,7 @@
 	self.tableView.sectionHeaderHeight = self.tableView.sectionHeaderHeight * 3 / 2;
     [self.tableView setSeparatorInset:UIEdgeInsetsZero];
 
-	[[NSUserDefaults standardUserDefaults] registerDefaults:@{
+	[[CTPreferences standardUserDefaults] registerDefaults:@{
 		@"Columns" : @[@0, @1, @3, @5, @20, @6, @7, @9, @12, @13],
 		@"UpdateInterval" : @"1",
 		@"FullWidthCommandLine" : @NO,
@@ -162,12 +164,12 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-	searchBar.placeholder = [NSString stringWithFormat:@"filter by %@ <tap another column>", filterColumn.fullname.lowercaseString];
+	searchBar.placeholder = [NSString stringWithFormat:CTLocalizedString(@"filter by %@ <tap another column>"), filterColumn.fullname.lowercaseString];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-	searchBar.placeholder = [NSString stringWithFormat:@"filter by %@", filterColumn.fullname.lowercaseString];
+	searchBar.placeholder = [NSString stringWithFormat:CTLocalizedString(@"filter by %@"), filterColumn.fullname.lowercaseString];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -209,11 +211,11 @@
 	// Status bar
 // Also add: Uptime, CPU Freq, Cores, Cache L1/L2
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-//		statusLabel.text = [NSString stringWithFormat:@"Free: %.1f MB  CPU: %.1f%%",
+//		statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Free: %.1f MB  CPU: %.1f%%"),
 //			(float)procs.memFree / 1024 / 1024,
 //			(float)procs.totalCpu / 10];
 //    } else {
-//		statusLabel.text = [NSString stringWithFormat:@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%",
+//		statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%"),
 //			(unsigned long)procs.totalCount,
 //			(unsigned long)procs.threadCount,
 //			(float)procs.memFree / 1024 / 1024,
@@ -235,12 +237,12 @@
     
     if (shortLabel) {
         statusLabel.frame = CGRectMake(statusLabel.frame.origin.x, statusLabel.frame.origin.y, self.tableView.frame.size.width - 80, 40);
-        statusLabel.text = [NSString stringWithFormat:@"Free: %.1f MB  CPU: %.1f%%",
+        statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Free: %.1f MB  CPU: %.1f%%"),
         (float)procs.memFree / 1024 / 1024,
         (float)procs.totalCpu / 10];
     } else {
         statusLabel.frame = CGRectMake(statusLabel.frame.origin.x, statusLabel.frame.origin.y, self.tableView.frame.size.width - 150, 40);
-        statusLabel.text = [NSString stringWithFormat:@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%",
+        statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%"),
         (unsigned long)procs.totalCount,
         (unsigned long)procs.threadCount,
         (float)procs.memFree / 1024 / 1024,
@@ -269,7 +271,7 @@
             }
 //#endif
 		}
-	} else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"AutoJumpNewProcess"]) {
+	} else if ([[CTPreferences standardUserDefaults] boolForKey:@"AutoJumpNewProcess"]) {
 		// If there's a new/terminated process, scroll to it
 		NSUInteger
 			idx = [procs indexOfDisplayed:ProcDisplayStarted];
@@ -299,15 +301,15 @@
 		if (filter.isFirstResponder && !filter.text.length) {
 			// Change filtering column
 			filterColumn = col;
-			[[NSUserDefaults standardUserDefaults] setInteger:col.tag forKey:@"FilterColumn"];
+			[[CTPreferences standardUserDefaults] setInteger:col.tag forKey:@"FilterColumn"];
 			[self searchBarTextDidEndEditing:filter];
 		} else {
 			// Change sorting column
 			sortDescending = sortColumn == col ? !sortDescending : col.style & ColumnStyleSortDesc;
 			[header sortColumnOld:sortColumn New:col desc:sortDescending];
 			sortColumn = col;
-			[[NSUserDefaults standardUserDefaults] setInteger:col.tag forKey:@"SortColumn"];
-			[[NSUserDefaults standardUserDefaults] setBool:sortDescending forKey:@"SortDescending"];
+			[[CTPreferences standardUserDefaults] setInteger:col.tag forKey:@"SortColumn"];
+			[[CTPreferences standardUserDefaults] setBool:sortDescending forKey:@"SortDescending"];
 			[timer fire];
 		}
 		break;
@@ -326,11 +328,11 @@
 	configId++;
 	columns = [PSColumn psGetShownColumnsWithWidth:UIApplication.sharedApplication.keyWindow.bounds.size.width];
 	// Find sort column and create table header
-	filterColumn = [PSColumn psColumnWithTag:[[NSUserDefaults standardUserDefaults] integerForKey:@"FilterColumn"]];
+	filterColumn = [PSColumn psColumnWithTag:[[CTPreferences standardUserDefaults] integerForKey:@"FilterColumn"]];
 	[self searchBarTextDidEndEditing:filter];
-	sortColumn = [PSColumn psColumnWithTag:[[NSUserDefaults standardUserDefaults] integerForKey:@"SortColumn"]];
+	sortColumn = [PSColumn psColumnWithTag:[[CTPreferences standardUserDefaults] integerForKey:@"SortColumn"]];
 	if (!sortColumn) sortColumn = columns[0];
-	sortDescending = [[NSUserDefaults standardUserDefaults] boolForKey:@"SortDescending"];
+	sortDescending = [[CTPreferences standardUserDefaults] boolForKey:@"SortDescending"];
 	header = [GridHeaderView headerWithColumns:columns size:CGSizeMake(self.tableView.bounds.size.width, self.tableView.sectionHeaderHeight)];
 	footer = [GridHeaderView footerWithColumns:columns size:CGSizeMake(self.tableView.bounds.size.width, self.tableView.sectionFooterHeight)];
 	[header sortColumnOld:nil New:sortColumn desc:sortDescending];
@@ -340,7 +342,7 @@
 
 - (void)reappearAllView {
     // When major options change, process list is rebuilt from scratch
-    NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+    id def = [CTPreferences standardUserDefaults];
     NSString *configCheck = [NSString stringWithFormat:@"%d-%@", [def boolForKey:@"ShortenPaths"], [def stringForKey:@"FirstColumnStyle"]];
     if (![configChange isEqualToString:configCheck]) {
         procs = [PSProcArray psProcArrayWithIconSize:self.tableView.rowHeight];
@@ -352,7 +354,7 @@
     if (self.tableView.contentOffset.y < minOffset)
         self.tableView.contentOffset = CGPointMake(0, minOffset);
     // Refresh interval
-    timerInterval = [[NSUserDefaults standardUserDefaults] floatForKey:@"UpdateInterval"];
+    timerInterval = [[CTPreferences standardUserDefaults] floatForKey:@"UpdateInterval"];
     [self refreshProcs:nil];
 }
 
@@ -363,12 +365,12 @@
             if (lastHorizationWindowSizeClass != self.view.window.traitCollection.horizontalSizeClass || lastHorizationWindowWidth != self.view.bounds.size.width) {
                 if (self.view.window.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
                     statusLabel.frame = CGRectMake(statusLabel.frame.origin.x, statusLabel.frame.origin.y, self.tableView.frame.size.width - 80, 40);
-                    statusLabel.text = [NSString stringWithFormat:@"Free: %.1f MB  CPU: %.1f%%",
+                    statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Free: %.1f MB  CPU: %.1f%%"),
                     (float)procs.memFree / 1024 / 1024,
                     (float)procs.totalCpu / 10];
                 } else {
                     statusLabel.frame = CGRectMake(statusLabel.frame.origin.x, statusLabel.frame.origin.y, self.tableView.frame.size.width - 150, 40);
-                    statusLabel.text = [NSString stringWithFormat:@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%",
+                    statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Processes: %lu   Threads: %lu   Free: %.1f/%.1f MB   CPU: %.1f%%"),
                     (unsigned long)procs.totalCount,
                     (unsigned long)procs.threadCount,
                     (float)procs.memFree / 1024 / 1024,
@@ -427,16 +429,16 @@
 
 // Section header/footer will be used as a grid header/footer
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{ return [[NSUserDefaults standardUserDefaults] boolForKey:@"ShowHeader"] && !fullScreen ? header : nil; }
+{ return [[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] && !fullScreen ? header : nil; }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{ return [[NSUserDefaults standardUserDefaults] boolForKey:@"ShowFooter"] && !fullScreen ? footer : nil; }
+{ return [[CTPreferences standardUserDefaults] boolForKey:@"ShowFooter"] && !fullScreen ? footer : nil; }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{ return [[NSUserDefaults standardUserDefaults] boolForKey:@"ShowHeader"] && !fullScreen ? self.tableView.sectionHeaderHeight : 0; }
+{ return [[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] && !fullScreen ? self.tableView.sectionHeaderHeight : 0; }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{ return [[NSUserDefaults standardUserDefaults] boolForKey:@"ShowFooter"] && !fullScreen ? self.tableView.sectionFooterHeight : 0; }
+{ return [[CTPreferences standardUserDefaults] boolForKey:@"ShowFooter"] && !fullScreen ? self.tableView.sectionFooterHeight : 0; }
 
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -514,8 +516,8 @@
 	// task_for_pid(mach_task_self(), pid, &task)
 	// task_terminate(task)
 	if (kill(proc.pid, sig)) {
-		NSString *msg = [NSString stringWithFormat:@"Error %d while terminating app", errno];
-		[[[UIAlertView alloc] initWithTitle:proc.name message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		NSString *msg = [NSString stringWithFormat:CTLocalizedString(@"Error %d while terminating app"), errno];
+		[[[UIAlertView alloc] initWithTitle:proc.name message:msg delegate:nil cancelButtonTitle:CTLocalizedString(@"OK") otherButtonTitles:nil] show];
 	}
 	// Refresh immediately to show process termination
 	tableView.editing = NO;
@@ -524,12 +526,12 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return @"KILL";
+	return CTLocalizedString(@"KILL");
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForSwipeAccessoryButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return @"TERM";
+	return CTLocalizedString(@"TERM");
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath

@@ -1,3 +1,5 @@
+#import "CTPreferences.h"
+#import "CTLocalization.h"
 #import "Compat.h"
 #import "SetupColumns.h"
 #import "Column.h"
@@ -112,7 +114,7 @@ static NSArray *presetNames;
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-	self.navigationItem.title = @"Column presets";
+	self.navigationItem.title = CTLocalizedString(@"Column presets");
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -122,7 +124,7 @@ static NSArray *presetNames;
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	return @"Select a column layout";
+	return CTLocalizedString(@"Select a column layout");
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -135,8 +137,8 @@ static NSArray *presetNames;
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Preset"];
 	if (cell == nil)
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Preset"];
-	cell.textLabel.text = presetNames[indexPath.row];
-	NSString *colNames = @"Command";
+	cell.textLabel.text = CTLocalizedString(presetNames[indexPath.row]);
+	NSString *colNames = CTLocalizedString(@"Command");
 	for (NSNumber *idx in presetList[presetNames[indexPath.row]]) {
 		NSInteger i = [idx intValue];
 		PSColumn *col = i ? [PSColumn psColumnWithTag:i] : nil;
@@ -148,7 +150,7 @@ static NSArray *presetNames;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[[NSUserDefaults standardUserDefaults] setObject:presetList[presetNames[indexPath.row]] forKey:@"Columns"];
+	[[CTPreferences standardUserDefaults] setObject:presetList[presetNames[indexPath.row]] forKey:@"Columns"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -178,8 +180,8 @@ enum InOutCols {
 {
 	[super viewDidLoad];
 	self.tableView.editing = YES;
-	self.navigationItem.title = @"Manage columns";
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Presets" style:UIBarButtonItemStylePlain
+	self.navigationItem.title = CTLocalizedString(@"Manage columns");
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CTLocalizedString(@"Presets") style:UIBarButtonItemStylePlain
 		target:self action:@selector(openPresets)];
 }
 
@@ -203,7 +205,7 @@ enum InOutCols {
 	NSMutableArray *order = [NSMutableArray array];
 	for (PSColumn* col in cols[_in])
 		[order addObject:[NSNumber numberWithUnsignedInteger:col.tag]];
-	[[NSUserDefaults standardUserDefaults] setObject:order forKey:@"Columns"];
+	[[CTPreferences standardUserDefaults] setObject:order forKey:@"Columns"];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -213,12 +215,12 @@ enum InOutCols {
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	return section == 0 ? @"Shown columns" : @"Inactive columns";
+	return section == 0 ? CTLocalizedString(@"Shown columns") : CTLocalizedString(@"Inactive columns");
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
-	return section == 0 ? @"Only columns that fit will actually be shown" : nil;
+	return section == 0 ? CTLocalizedString(@"Only columns that fit will actually be shown") : nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

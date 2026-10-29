@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>CocoaTop</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.crctdd.cocoatop</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -19,9 +19,15 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>3.0.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>3.0.0</string>
+	<key>MinimumOSVersion</key>
+	<string>15.0</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIDeviceFamily</key>
+	<array><integer>1</integer><integer>2</integer></array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UISupportedInterfaceOrientations</key>

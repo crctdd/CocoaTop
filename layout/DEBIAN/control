@@ -1,12 +1,11 @@
-Package: ru.domo.cocoatop64
-Name: CocoatopTS
+Package: com.crctdd.cocoatop
+Name: CocoaTop
 Version: 3.0.0
-Architecture: iphoneos-arm
-Description: Process Viewer for iOS GUI, updated for iOS 13 by SXX.
-Depends: firmware (>= 12.0) | org.swift.libswift
-Conflicts: ru.domo.cocoatop
-Replaces: ru.domo.cocoatop
-Breaks: ru.domo.cocoatop
-Author: Domo, SXX
-Maintainer: AlvinHV
+Architecture: iphoneos-arm64
+Description: Process viewer for jailbroken iOS 15-17.
+Depends: firmware (>= 15.0)
+Conflicts: cn.zqbb.ccatop, cn.llld.cocoatop, ru.domo.cocoatop64, cn.zqbb.ccatop.whitelist
+Replaces: cn.zqbb.ccatop, cn.llld.cocoatop, ru.domo.cocoatop64, cn.zqbb.ccatop.whitelist
+Author: crctdd
+Maintainer: crctdd
 Section: Applications

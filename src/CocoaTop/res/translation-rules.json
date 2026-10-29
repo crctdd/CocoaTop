@@ -1,0 +1,1577 @@
+[
+  {
+    "id": 1,
+    "original": "Flags",
+    "translation": "标志",
+    "compare_address": "0x0083bc",
+    "translation_load_address": "0x0083d0"
+  },
+  {
+    "id": 2,
+    "original": "Column",
+    "translation": "列",
+    "compare_address": "0x0083ec",
+    "translation_load_address": "0x008400"
+  },
+  {
+    "id": 3,
+    "original": "Value",
+    "translation": "值",
+    "compare_address": "0x00841c",
+    "translation_load_address": "0x008430"
+  },
+  {
+    "id": 4,
+    "original": "Copy",
+    "translation": "复制",
+    "compare_address": "0x00844c",
+    "translation_load_address": "0x008460"
+  },
+  {
+    "id": 5,
+    "original": "OK",
+    "translation": "确定",
+    "compare_address": "0x00847c",
+    "translation_load_address": "0x008490"
+  },
+  {
+    "id": 6,
+    "original": "This is the default priority set for newly created threads Tap the process and go to 'Threads' pane to see actual priorities and scheduling schemes of existing threads. ",
+    "translation": "这是为新建线程设置的默认优先级点击进程并转到“Threads”窗口，查看现有线程的实际优先级和调度方案。",
+    "compare_address": "0x0084ac",
+    "translation_load_address": "0x0084c0"
+  },
+  {
+    "id": 7,
+    "original": "Process group id.",
+    "translation": "进程组id。",
+    "compare_address": "0x0084dc",
+    "translation_load_address": "0x0084f0"
+  },
+  {
+    "id": 8,
+    "original": "Bytes read from disk per update interval.",
+    "translation": "每个更新间隔从磁盘读取的字节数。",
+    "compare_address": "0x00850c",
+    "translation_load_address": "0x008520"
+  },
+  {
+    "id": 9,
+    "original": "Bytes written to disk per update interval.",
+    "translation": "每个更新间隔写入磁盘的字节数。",
+    "compare_address": "0x00853c",
+    "translation_load_address": "0x008550"
+  },
+  {
+    "id": 10,
+    "original": "Bytes read from disk since process launch.",
+    "translation": "自进程启动以来从磁盘读取的字节数。",
+    "compare_address": "0x00856c",
+    "translation_load_address": "0x008580"
+  },
+  {
+    "id": 11,
+    "original": "Number of timer wakeups by this process per update interval.",
+    "translation": "每个更新间隔此进程的计时器唤醒次数。",
+    "compare_address": "0x00859c",
+    "translation_load_address": "0x0085b0"
+  },
+  {
+    "id": 12,
+    "original": "This is the default priority set for newly created threads Tap the process and go to 'Threads' pane to see actual priorities and scheduling schemes of existing threads.",
+    "translation": "这是为新建线程设置的默认优先级点击进程并转到“Threads”窗口，查看现有线程的实际优先级和调度方案。",
+    "compare_address": "0x0085cc",
+    "translation_load_address": "0x0085e0"
+  },
+  {
+    "id": 13,
+    "original": "Time elapsed since process launch.",
+    "translation": "进程启动后经过的时间。",
+    "compare_address": "0x0085fc",
+    "translation_load_address": "0x008610"
+  },
+  {
+    "id": 14,
+    "original": "Bytes written to disk since process launch.",
+    "translation": "自进程启动以来写入磁盘的字节数。",
+    "compare_address": "0x00862c",
+    "translation_load_address": "0x008640"
+  },
+  {
+    "id": 15,
+    "original": "Process group id",
+    "translation": "进程组id",
+    "compare_address": "0x00865c",
+    "translation_load_address": "0x008670"
+  },
+  {
+    "id": 16,
+    "original": "Bytes read from disk per update interval",
+    "translation": "每个更新间隔从磁盘读取的字节数",
+    "compare_address": "0x00868c",
+    "translation_load_address": "0x0086a0"
+  },
+  {
+    "id": 17,
+    "original": "Number of idle wakeups by this process per update interval.",
+    "translation": "此进程在每个更新间隔内的空闲唤醒次数。",
+    "compare_address": "0x0086bc",
+    "translation_load_address": "0x0086d0"
+  },
+  {
+    "id": 18,
+    "original": "Copy text",
+    "translation": "复制文本",
+    "compare_address": "0x0086ec",
+    "translation_load_address": "0x008700"
+  },
+  {
+    "id": 19,
+    "original": "I  Idle: all threads are sleeping for at least 20 seconds",
+    "translation": "I  Idle：所有线程至少休眠20秒",
+    "compare_address": "0x00871c",
+    "translation_load_address": "0x008730"
+  },
+  {
+    "id": 20,
+    "original": "?\tRunning state is unknown (access to threads was denied)",
+    "translation": "？运行状态未知（拒绝访问线程）",
+    "compare_address": "0x00874c",
+    "translation_load_address": "0x008760"
+  },
+  {
+    "id": 21,
+    "original": "Copy text and open in Filza",
+    "translation": "复制文本并在Filza中打开",
+    "compare_address": "0x00877c",
+    "translation_load_address": "0x008790"
+  },
+  {
+    "id": 22,
+    "original": "D\tThe process is stopped by a signal (can be used for debugging)",
+    "translation": "D进程被信号停止（可用于调试）",
+    "compare_address": "0x0087ac",
+    "translation_load_address": "0x0087c0"
+  },
+  {
+    "id": 23,
+    "original": "Not nice: higher priority",
+    "translation": "不好：优先级更高",
+    "compare_address": "0x0087dc",
+    "translation_load_address": "0x0087f0"
+  },
+  {
+    "id": 24,
+    "original": "T\tTerminated: all threads stopped",
+    "translation": "T已终止：所有线程已停止",
+    "compare_address": "0x00880c",
+    "translation_load_address": "0x008820"
+  },
+  {
+    "id": 25,
+    "original": "The system process (kernel)",
+    "translation": "系统进程（内核）",
+    "compare_address": "0x00883c",
+    "translation_load_address": "0x008850"
+  },
+  {
+    "id": 26,
+    "original": "CPU usage is expressed in % per CPU core, thus it sums up to cores×100%. Sometimes it can even exceed this value, due to reasons explained in this app's 'About' section. This is hilarious!",
+    "translation": "CPU使用率以每个CPU核心的%表示，因此它总计为核心x100%有时甚至会超过这个值，这是由于该应用程序的“关于”部分中解释的原因。",
+    "compare_address": "0x00886c",
+    "translation_load_address": "0x008880"
+  },
+  {
+    "id": 27,
+    "original": "?Running: at least one thread within this process is running now",
+    "translation": "正在运行：此进程中至少有一个线程正在运行",
+    "compare_address": "0x00889c",
+    "translation_load_address": "0x0088b0"
+  },
+  {
+    "id": 28,
+    "original": "U\tUninterruptible (Stuck): a thread is waiting on I/Oin a system call",
+    "translation": "U不间断（卡住）：线程正在等待系统调用中的I/O",
+    "compare_address": "0x0088cc",
+    "translation_load_address": "0x0088e0"
+  },
+  {
+    "id": 29,
+    "original": "Summary of this column shows two numbers: the first one is the count of processes in running state, the second one is the number of CPU cores. Sometimes there are more running processes than there are CPU cores, but this is just a glitch due to kernel state changing while data is collected.",
+    "translation": "该列的摘要显示了两个数字：第一个是处于运行状态的进程数，第二个是CPU内核数。有时运行的进程比CPU内核多，但这只是由于收集数据时内核状态发生变化而导致的故障。",
+    "compare_address": "0x0088fc",
+    "translation_load_address": "0x008910"
+  },
+  {
+    "id": 30,
+    "original": "Nice: lower priority, also see 'Nice' column",
+    "translation": "Nice：优先级较低，另请参阅“Nice”栏",
+    "compare_address": "0x00892c",
+    "translation_load_address": "0x008940"
+  },
+  {
+    "id": 31,
+    "original": "十",
+    "translation": "十",
+    "compare_address": "0x00895c",
+    "translation_load_address": "0x008970"
+  },
+  {
+    "id": 32,
+    "original": "W Process' parent is waiting for this child after fork",
+    "translation": "W进程的父进程正在fork之后等待此子进程",
+    "compare_address": "0x00898c",
+    "translation_load_address": "0x0089a0"
+  },
+  {
+    "id": 33,
+    "original": "Debugged process is being traced",
+    "translation": "正在跟踪调试过程",
+    "compare_address": "0x0089bc",
+    "translation_load_address": "0x0089d0"
+  },
+  {
+    "id": 34,
+    "original": "Z Process is being terminated at the moment",
+    "translation": "Z进程目前正在终止",
+    "compare_address": "0x0089ec",
+    "translation_load_address": "0x008a00"
+  },
+  {
+    "id": 35,
+    "original": "H Halted: all threads halted at a clean point",
+    "translation": "H停止：所有线程在干净的点停止",
+    "compare_address": "0x008a1c",
+    "translation_load_address": "0x008a30"
+  },
+  {
+    "id": 36,
+    "original": "Can be one of the following:",
+    "translation": "可以是以下内容之一：",
+    "compare_address": "0x008a4c",
+    "translation_load_address": "0x008a60"
+  },
+  {
+    "id": 37,
+    "original": "Z Zombie: awaiting termination or 'orphan'",
+    "translation": "Z   僵尸进程:正在等待终止或者已经成为孤儿进程的进程。”",
+    "compare_address": "0x008a7c",
+    "translation_load_address": "0x008a90"
+  },
+  {
+    "id": 38,
+    "original": "S    Sleeping: all threads of a process are sleeping",
+    "translation": "S睡眠：进程的所有线程都在睡眠",
+    "compare_address": "0x008aac",
+    "translation_load_address": "0x008ac0"
+  },
+  {
+    "id": 39,
+    "original": "Additional process attributes can follow:",
+    "translation": "其他过程属性如下：",
+    "compare_address": "0x008adc",
+    "translation_load_address": "0x008af0"
+  },
+  {
+    "id": 40,
+    "original": "Application is suspended by SpringBoard (iOS specific)",
+    "translation": "应用程序被 SpringBoard 暂停(iOS 特定)",
+    "compare_address": "0x008b0c",
+    "translation_load_address": "0x008b20"
+  },
+  {
+    "id": 41,
+    "original": "Unique ID of process' parent - the one that called exec()/fork().",
+    "translation": "进程父进程的唯一ID，即调用exec（）/fock（）的进程。",
+    "compare_address": "0x008b3c",
+    "translation_load_address": "0x008b50"
+  },
+  {
+    "id": 42,
+    "original": "This value is inaccurate due to the fact that CocoaTop can only monitor process' sockets while it is active. Sockets having a lifetime during CocoaTop loeing inactive are not counted.",
+    "translation": "此值不准确，因为CocoaTop只能在进程的套接字处于活动状态时监视进程的套接字。在CocoaTop期间具有生存期的套接字处于非活动状态不计算在内。",
+    "compare_address": "0x008b6c",
+    "translation_load_address": "0x008b80"
+  },
+  {
+    "id": 43,
+    "original": "Network packets transmitted by process since launch.",
+    "translation": "自启动以来由进程传输的网络数据包。",
+    "compare_address": "0x008b9c",
+    "translation_load_address": "0x008bb0"
+  },
+  {
+    "id": 44,
+    "original": "filter by command line",
+    "translation": "按命令行筛选",
+    "compare_address": "0x008bcc",
+    "translation_load_address": "0x008be0"
+  },
+  {
+    "id": 45,
+    "original": "Number of timer wakeups by this process per update interval",
+    "translation": "每个更新间隔此进程的计时器唤醒次数",
+    "compare_address": "0x008bfc",
+    "translation_load_address": "0x008c10"
+  },
+  {
+    "id": 46,
+    "original": "Bytes written to disk since process launch",
+    "translation": "自进程启动以来写入磁盘的字节数",
+    "compare_address": "0x008c2c",
+    "translation_load_address": "0x008c40"
+  },
+  {
+    "id": 47,
+    "original": "The assigned role for GUI apps (Mac- specific). This may not be shown on older iOS versions. ",
+    "translation": "为GUI应用程序分配的角色（特定于Mac）这可能不会在旧的iOS版本上显示。",
+    "compare_address": "0x008c5c",
+    "translation_load_address": "0x008c70"
+  },
+  {
+    "id": 48,
+    "original": "Number of idle wakeups by this process per update interval",
+    "translation": "每个更新间隔此进程的空闲唤醒次数",
+    "compare_address": "0x008c8c",
+    "translation_load_address": "0x008ca0"
+  },
+  {
+    "id": 49,
+    "original": "Maximum resident memory usage since process launch",
+    "translation": "自进程启动以来的最大驻留内存使用量",
+    "compare_address": "0x008cbc",
+    "translation_load_address": "0x008cd0"
+  },
+  {
+    "id": 50,
+    "original": "A positive 'nice' value lowers the priority of the process' threads. A negative value raises the priority.",
+    "translation": "正值“nice”会降低进程线程的优先级。负值会提高优先级。",
+    "compare_address": "0x008cec",
+    "translation_load_address": "0x008d00"
+  },
+  {
+    "id": 51,
+    "original": "Resident memory usage. Also see 'Physical Memory Footprint' column",
+    "translation": "常驻内存使用情况另请参阅“物理内存占用”列",
+    "compare_address": "0x008d1c",
+    "translation_load_address": "0x008d30"
+  },
+  {
+    "id": 52,
+    "original": "Resident memory usage. Also see 'Physical Memory Footprint' column.",
+    "translation": "常驻内存使用情况另请参阅“物理内存占用”列",
+    "compare_address": "0x008d4c",
+    "translation_load_address": "0x008d60"
+  },
+  {
+    "id": 53,
+    "original": "Total number of context switches by this process.",
+    "translation": "此进程进行的上下文切换的总数。",
+    "compare_address": "0x008d7c",
+    "translation_load_address": "0x008d90"
+  },
+  {
+    "id": 54,
+    "original": "Presets",
+    "translation": "预设",
+    "compare_address": "0x008dac",
+    "translation_load_address": "0x008dc0"
+  },
+  {
+    "id": 55,
+    "original": "Back",
+    "translation": "后退",
+    "compare_address": "0x008ddc",
+    "translation_load_address": "0x008df0"
+  },
+  {
+    "id": 56,
+    "original": "Address",
+    "translation": "地址",
+    "compare_address": "0x008e0c",
+    "translation_load_address": "0x008e20"
+  },
+  {
+    "id": 57,
+    "original": "Mapped module",
+    "translation": "映射模块",
+    "compare_address": "0x008e3c",
+    "translation_load_address": "0x008e50"
+  },
+  {
+    "id": 58,
+    "original": "Also see 'Mach System Calls (Delta)' column.",
+    "translation": "另请参阅“Mach系统调用（差值）”栏。",
+    "compare_address": "0x008e6c",
+    "translation_load_address": "0x008e80"
+  },
+  {
+    "id": 59,
+    "original": "Number of BSD system calls per update interval.",
+    "translation": "每个更新间隔的BSD系统调用数。",
+    "compare_address": "0x008e9c",
+    "translation_load_address": "0x008eb0"
+  },
+  {
+    "id": 60,
+    "original": "Total number of Mach system calls by the process.",
+    "translation": "进程调用Mach系统的总数。",
+    "compare_address": "0x008ecc",
+    "translation_load_address": "0x008ee0"
+  },
+  {
+    "id": 61,
+    "original": "Number of active file descriptors opened by process.",
+    "translation": "进程打开的活动文件描述符数。",
+    "compare_address": "0x008efc",
+    "translation_load_address": "0x008f10"
+  },
+  {
+    "id": 62,
+    "original": "This includes address space taken by dynamic libraries.",
+    "translation": "这包括动态库占用的地址空间。",
+    "compare_address": "0x008f2c",
+    "translation_load_address": "0x008f40"
+  },
+  {
+    "id": 63,
+    "original": "The base thread priority of a process.",
+    "translation": "进程的基本线程优先级。",
+    "compare_address": "0x008f5c",
+    "translation_load_address": "0x008f70"
+  },
+  {
+    "id": 64,
+    "original": "Effective (current) user id.",
+    "translation": "有效（当前）用户id。",
+    "compare_address": "0x008f8c",
+    "translation_load_address": "0x008fa0"
+  },
+  {
+    "id": 65,
+    "original": "Number of Mach system calls per update interval.",
+    "translation": "每个更新间隔的Mach系统调用数。",
+    "compare_address": "0x008fbc",
+    "translation_load_address": "0x008fd0"
+  },
+  {
+    "id": 66,
+    "original": "Messages are received using Mach ports. Also see 'Mach Ports' column.",
+    "translation": "使用Mach端口接收消息另请参阅“Mach端口”栏。",
+    "compare_address": "0x008fec",
+    "translation_load_address": "0x009000"
+  },
+  {
+    "id": 67,
+    "original": "This includes IP network sockets, UNIX, and XNU kernel sockets. Tap the process and go to 'Open Files' pane for details.",
+    "translation": "这包括IP网络套接字、UNIX和XNU内核套接字。点击进程并转到“Open Files”窗口以了解详细信息。",
+    "compare_address": "0x00901c",
+    "translation_load_address": "0x009030"
+  },
+  {
+    "id": 68,
+    "original": "There are several scheduling schemes supported by Mach, 'Time Sharing' being the default. The other two, 'Round-Robin' and 'FIFO', will be marked in this column using prefixes R: and F: respectively. Tap the process and go to 'Threads' pane to see actual priorities and scheduling schemes of every thread.",
+    "translation": "Mach支持几种调度方案，“时间共享”是默认设置。另外两个，'Round-Robin'和'FIFO'，将分别使用前缀R:和F:在本列中标记。点击进程并转到“Threads”窗口，查看每个线程的实际优先级和调度方案。",
+    "compare_address": "0x00904c",
+    "translation_load_address": "0x009060"
+  },
+  {
+    "id": 69,
+    "original": "This includes open files, pipes, network sockets, kernel sockets, and kernel queues. Tap the process and go to 'Open Files' pane for lots of details.",
+    "translation": "这包括打开的文件、管道、网络套接字、内核套接字和内核队列,点击进程并转到“Open Files”窗口以获取大量详细信息。",
+    "compare_address": "0x00907c",
+    "translation_load_address": "0x009090"
+  },
+  {
+    "id": 70,
+    "original": "This includes open files, pipes, network sockets, kernel sockets,",
+    "translation": "这包括打开的文件、管道、网络套接字、内核套接字、，",
+    "compare_address": "0x0090ac",
+    "translation_load_address": "0x0090c0"
+  },
+  {
+    "id": 71,
+    "original": "Summary of this column denotes the number of processes executing as user (aka 'mobile').",
+    "translation": "此列的摘要表示以用户身份执行的进程数（也称为“移动”）。",
+    "compare_address": "0x0090dc",
+    "translation_load_address": "0x0090f0"
+  },
+  {
+    "id": 72,
+    "original": "The highest priority of a thread within the process. Can be prefixed by the process' default scheduling scheme.",
+    "translation": "进程中线程的最高优先级可以用进程的默认调度方案作为前缀。",
+    "compare_address": "0x00910c",
+    "translation_load_address": "0x009120"
+  },
+  {
+    "id": 73,
+    "original": "Total Mach messages received by the process.",
+    "translation": "进程接收的Mach数消息总数。",
+    "compare_address": "0x00913c",
+    "translation_load_address": "0x009150"
+  },
+  {
+    "id": 74,
+    "original": "Number of active socket descriptors opened by process.",
+    "translation": "进程打开的活动套接字描述符数。",
+    "compare_address": "0x00916c",
+    "translation_load_address": "0x009180"
+  },
+  {
+    "id": 75,
+    "original": "BSD system calls are calls to the BSD part of the XNU kernel. There are almost 1000 BSD services available on iOS depending on kernel version.",
+    "translation": "BSD系统调用是对XNU内核的BSD部分的调用。iOS上有近1000个BSD服务，具体取决于内核版本。",
+    "compare_address": "0x00919c",
+    "translation_load_address": "0x0091b0"
+  },
+  {
+    "id": 76,
+    "original": "'Threads' pane to see actual priorities and scheduling schemes of existing threads.",
+    "translation": "“Threads”窗口可查看现有线程的实际优先级和计划方案。",
+    "compare_address": "0x0091cc",
+    "translation_load_address": "0x0091e0"
+  },
+  {
+    "id": 77,
+    "original": "Summary of this column denotes the number of GUI processes (user applications).",
+    "translation": "此列的摘要表示GUI进程（用户应用程序）的数量。",
+    "compare_address": "0x0091fc",
+    "translation_load_address": "0x009210"
+  },
+  {
+    "id": 78,
+    "original": "Network bytes received by process per update period.",
+    "translation": "进程在每个更新周期接收的网络字节数。",
+    "compare_address": "0x00922c",
+    "translation_load_address": "0x009240"
+  },
+  {
+    "id": 79,
+    "original": "Network bytes transmitted by process per update period.",
+    "translation": "进程在每个更新周期传输的网络字节数。",
+    "compare_address": "0x00925c",
+    "translation_load_address": "0x009270"
+  },
+  {
+    "id": 80,
+    "original": "and kernel queues Tap the process and go to 'Open Files' pane for lots of details.",
+    "translation": "和内核队列点击进程并转到“Open Files”窗口了解更多详细信息。",
+    "compare_address": "0x00928c",
+    "translation_load_address": "0x0092a0"
+  },
+  {
+    "id": 81,
+    "original": "For console processes this contains the name of the controlling terminal (TTY)",
+    "translation": "对于控制台进程，它包含控制终端（TTY）的名称。",
+    "compare_address": "0x0092bc",
+    "translation_load_address": "0x0092d0"
+  },
+  {
+    "id": 82,
+    "original": "For console processes this contains the name of the controlling terminal (TTY).",
+    "translation": "对于控制台进程，它包含控制终端（TTY）的名称。",
+    "compare_address": "0x0092ec",
+    "translation_load_address": "0x009300"
+  },
+  {
+    "id": 83,
+    "original": "Tap the process and go to 'Threads' pane for lots of details.",
+    "translation": "点击进程并转到“Threads”窗口以获取大量详细信息。",
+    "compare_address": "0x00931c",
+    "translation_load_address": "0x009330"
+  },
+  {
+    "id": 84,
+    "original": "Possible values are:",
+    "translation": "可能的值为：",
+    "compare_address": "0x00934c",
+    "translation_load_address": "0x009360"
+  },
+  {
+    "id": 85,
+    "original": "while it is active Sockets having a lifetime during CocoaTop being inactive are not counted.",
+    "translation": "当它处于活动状态时，在CocoaTop处于非活动状态期间具有生存期的套接字不被计算在内。",
+    "compare_address": "0x00937c",
+    "translation_load_address": "0x009390"
+  },
+  {
+    "id": 86,
+    "original": "Number of threads in the process.",
+    "translation": "进程中的线程数。",
+    "compare_address": "0x0093ac",
+    "translation_load_address": "0x0093c0"
+  },
+  {
+    "id": 87,
+    "original": "Mach ports are the primary means of low-level communication with the kernel and between the processes in a microkernel environment.",
+    "translation": "Mach端口是在微内核环境中与内核以及进程之间进行低级通信的主要手段。",
+    "compare_address": "0x0093dc",
+    "translation_load_address": "0x0093f0"
+  },
+  {
+    "id": 88,
+    "original": "Number of context switches by this process per update interval.",
+    "translation": "此进程在每个更新间隔中进行的上下文切换数。",
+    "compare_address": "0x00940c",
+    "translation_load_address": "0x009420"
+  },
+  {
+    "id": 89,
+    "original": "Messages are sent using Mach ports. Also see 'Mach Ports' column.",
+    "translation": "使用Mach端口发送消息另请参阅“Mach端口”栏。",
+    "compare_address": "0x00943c",
+    "translation_load_address": "0x009450"
+  },
+  {
+    "id": 90,
+    "original": "This is the number of times the process was activated by the kernel due to a hardware interrupt.",
+    "translation": "这是内核由于硬件中断而激活进程的次数。",
+    "compare_address": "0x00946c",
+    "translation_load_address": "0x009480"
+  },
+  {
+    "id": 91,
+    "original": "Bytes written to disk per update interval",
+    "translation": "每个更新间隔写入磁盘的字节数。",
+    "compare_address": "0x00949c",
+    "translation_load_address": "0x0094b0"
+  },
+  {
+    "id": 92,
+    "original": "Physical memory footprint.",
+    "translation": "物理内存占用。",
+    "compare_address": "0x0094cc",
+    "translation_load_address": "0x0094e0"
+  },
+  {
+    "id": 93,
+    "original": "This value is inaccurate due to the fact that CocoaTop can only monitor process' sockets while it is active. Sockets having a lifetime during CocoaTop being inactive are not counted.",
+    "translation": "此值不准确，因为CocoaTop只能在进程的套接字处于活动状态时监视进程的套接字。在CocoaTop处于非活动状态期间具有生存期的套接字不计算在内。",
+    "compare_address": "0x0094fc",
+    "translation_load_address": "0x009510"
+  },
+  {
+    "id": 94,
+    "original": "Network packets received by process since launch.",
+    "translation": "自启动以来进程接收到的网络数据包。",
+    "compare_address": "0x00952c",
+    "translation_load_address": "0x009540"
+  },
+  {
+    "id": 95,
+    "original": "Time elapsed since process launch",
+    "translation": "自进程启动以来经过的时间",
+    "compare_address": "0x00955c",
+    "translation_load_address": "0x009570"
+  },
+  {
+    "id": 96,
+    "original": "Bytes read from disk since process launch",
+    "translation": "自进程启动以来从磁盘读取的字节数",
+    "compare_address": "0x00958c",
+    "translation_load_address": "0x0095a0"
+  },
+  {
+    "id": 97,
+    "original": "This is the most accurate RAM usage data by process.",
+    "translation": "这是按进程划分的最准确的RAM使用数据。",
+    "compare_address": "0x0095bc",
+    "translation_load_address": "0x0095d0"
+  },
+  {
+    "id": 98,
+    "original": "Network bytes transmitted by process since launch.",
+    "translation": "自启动以来进程传输的网络字节数。",
+    "compare_address": "0x0095ec",
+    "translation_load_address": "0x009600"
+  },
+  {
+    "id": 99,
+    "original": "Process state (similar to original top).",
+    "translation": "进程状态(和原来的top类似)。",
+    "compare_address": "0x00961c",
+    "translation_load_address": "0x009630"
+  },
+  {
+    "id": 100,
+    "original": "Number of Mach ports opened by the process.",
+    "translation": "进程打开的Mach端口数量。",
+    "compare_address": "0x00964c",
+    "translation_load_address": "0x009660"
+  },
+  {
+    "id": 101,
+    "original": "Total number of BSD system calls by the process.",
+    "translation": "进程调用BSD系统的总数。",
+    "compare_address": "0x00967c",
+    "translation_load_address": "0x009690"
+  },
+  {
+    "id": 102,
+    "original": "Update interval (seconds)",
+    "translation": "更新间隔（秒）",
+    "compare_address": "0x0096ac",
+    "translation_load_address": "0x0096c0"
+  },
+  {
+    "id": 103,
+    "original": "First column style",
+    "translation": "第一列样式",
+    "compare_address": "0x0096dc",
+    "translation_load_address": "0x0096f0"
+  },
+  {
+    "id": 104,
+    "original": "Full width command line",
+    "translation": "全宽命令行",
+    "compare_address": "0x00970c",
+    "translation_load_address": "0x009720"
+  },
+  {
+    "id": 105,
+    "original": "Show short (symlinked) paths",
+    "translation": "显示短路径（符号链接）",
+    "compare_address": "0x00973c",
+    "translation_load_address": "0x009750"
+  },
+  {
+    "id": 106,
+    "original": "Auto scroll to new/terminated processes",
+    "translation": "自动滚动到新的/已终止的进程",
+    "compare_address": "0x00976c",
+    "translation_load_address": "0x009780"
+  },
+  {
+    "id": 107,
+    "original": "Show column sort header",
+    "translation": "显示列排序头部",
+    "compare_address": "0x00979c",
+    "translation_load_address": "0x0097b0"
+  },
+  {
+    "id": 108,
+    "original": "Show column totals (footer)",
+    "translation": "显示列总计（页脚）",
+    "compare_address": "0x0097cc",
+    "translation_load_address": "0x0097e0"
+  },
+  {
+    "id": 109,
+    "original": "Highlight changing values",
+    "translation": "高亮显示变化的数值",
+    "compare_address": "0x0097fc",
+    "translation_load_address": "0x009810"
+  },
+  {
+    "id": 110,
+    "original": "BSD Total System Calls",
+    "translation": "BSD总系统调用",
+    "compare_address": "0x00982c",
+    "translation_load_address": "0x009840"
+  },
+  {
+    "id": 111,
+    "original": "Columns Quick Guide",
+    "translation": "列快速指南",
+    "compare_address": "0x00985c",
+    "translation_load_address": "0x009870"
+  },
+  {
+    "id": 112,
+    "original": "Quick Guide",
+    "translation": "快速指南",
+    "compare_address": "0x00988c",
+    "translation_load_address": "0x0098a0"
+  },
+  {
+    "id": 113,
+    "original": "Columns",
+    "translation": "列",
+    "compare_address": "0x0098bc",
+    "translation_load_address": "0x0098d0"
+  },
+  {
+    "id": 114,
+    "original": "Show heads-up display",
+    "translation": "显示抬头显示",
+    "compare_address": "0x0098ec",
+    "translation_load_address": "0x009900"
+  },
+  {
+    "id": 115,
+    "original": "Make haptic vibration",
+    "translation": "进行触觉振动",
+    "compare_address": "0x00991c",
+    "translation_load_address": "0x009930"
+  },
+  {
+    "id": 116,
+    "original": "Make beep sound",
+    "translation": "发出蜂鸣声音",
+    "compare_address": "0x00994c",
+    "translation_load_address": "0x009960"
+  },
+  {
+    "id": 117,
+    "original": "Performance",
+    "translation": "性能",
+    "compare_address": "0x00997c",
+    "translation_load_address": "0x009990"
+  },
+  {
+    "id": 118,
+    "original": "LOCALE",
+    "translation": "地区设置",
+    "compare_address": "0x0099ac",
+    "translation_load_address": "0x0099c0"
+  },
+  {
+    "id": 119,
+    "original": "Language",
+    "translation": "语言",
+    "compare_address": "0x0099dc",
+    "translation_load_address": "0x0099f0"
+  },
+  {
+    "id": 120,
+    "original": "System Language",
+    "translation": "系统语言",
+    "compare_address": "0x009a0c",
+    "translation_load_address": "0x009a20"
+  },
+  {
+    "id": 121,
+    "original": "NewTerm will ask terminal programs to use this locale. Not all programs support this. This will not apply to currently open tabs, and may be overridden by shell startup scripts.",
+    "translation": "NewTerm将要求终端程序使用此地区设置。并非所有程序都支持这一点。这不适用于当前打开的标签页，可能会被Shell启动脚本覆盖。",
+    "compare_address": "0x009a3c",
+    "translation_load_address": "0x009a50"
+  },
+  {
+    "id": 122,
+    "original": "Manage columns",
+    "translation": "管理列",
+    "compare_address": "0x009a6c",
+    "translation_load_address": "0x009a80"
+  },
+  {
+    "id": 123,
+    "original": "Column presets",
+    "translation": "列预设",
+    "compare_address": "0x009a9c",
+    "translation_load_address": "0x009ab0"
+  },
+  {
+    "id": 124,
+    "original": "SELECT A COLUMN LAYOUT",
+    "translation": "选择列布局",
+    "compare_address": "0x009acc",
+    "translation_load_address": "0x009ae0"
+  },
+  {
+    "id": 125,
+    "original": "Reset",
+    "translation": "重置",
+    "compare_address": "0x009afc",
+    "translation_load_address": "0x009b10"
+  },
+  {
+    "id": 126,
+    "original": "Reset settings to default values?",
+    "translation": "将设置重置为默认值？",
+    "compare_address": "0x009b2c",
+    "translation_load_address": "0x009b40"
+  },
+  {
+    "id": 127,
+    "original": "Context Switches Total",
+    "translation": "上下文切换总数",
+    "compare_address": "0x009b5c",
+    "translation_load_address": "0x009b70"
+  },
+  {
+    "id": 128,
+    "original": "Mach Total System Calls BSD Total System Calls Context Switches Total",
+    "translation": "Mach总系统调用BSD总系统调用上下文总切换",
+    "compare_address": "0x009b8c",
+    "translation_load_address": "0x009ba0"
+  },
+  {
+    "id": 129,
+    "original": "Mach Total System Calls",
+    "translation": "Mach总系统调用",
+    "compare_address": "0x009bbc",
+    "translation_load_address": "0x009bd0"
+  },
+  {
+    "id": 130,
+    "original": "Group Id",
+    "translation": "组ID",
+    "compare_address": "0x009bec",
+    "translation_load_address": "0x009c00"
+  },
+  {
+    "id": 131,
+    "original": "Mach System Calls (Delta)",
+    "translation": "Mach系统调用（差值）",
+    "compare_address": "0x009c1c",
+    "translation_load_address": "0x009c30"
+  },
+  {
+    "id": 132,
+    "original": "BSD System Calls (Delta)",
+    "translation": "BSD系统调用（差值）",
+    "compare_address": "0x009c4c",
+    "translation_load_address": "0x009c60"
+  },
+  {
+    "id": 133,
+    "original": "Context Switches (Delta)",
+    "translation": "上下文切换（差值）",
+    "compare_address": "0x009c7c",
+    "translation_load_address": "0x009c90"
+  },
+  {
+    "id": 134,
+    "original": "Mach Actual Threads Priority",
+    "translation": "Mach实际线程优先级",
+    "compare_address": "0x009cac",
+    "translation_load_address": "0x009cc0"
+  },
+  {
+    "id": 135,
+    "original": "Base Process Priority",
+    "translation": "基础进程优先级",
+    "compare_address": "0x009cdc",
+    "translation_load_address": "0x009cf0"
+  },
+  {
+    "id": 136,
+    "original": "Process Nice Value",
+    "translation": "进程优先级调整值",
+    "compare_address": "0x009d0c",
+    "translation_load_address": "0x009d20"
+  },
+  {
+    "id": 137,
+    "original": "Mach Messages Sent",
+    "translation": "发送的Mach消息",
+    "compare_address": "0x009d3c",
+    "translation_load_address": "0x009d50"
+  },
+  {
+    "id": 138,
+    "original": "Mach Messages Received",
+    "translation": "接收的Mach消息",
+    "compare_address": "0x009d6c",
+    "translation_load_address": "0x009d80"
+  },
+  {
+    "id": 139,
+    "original": "Open File/Socket Descriptors",
+    "translation": "打开的文件/套接字描述符",
+    "compare_address": "0x009d9c",
+    "translation_load_address": "0x009db0"
+  },
+  {
+    "id": 140,
+    "original": "Open Socket Descriptors",
+    "translation": "打开的套接字描述符",
+    "compare_address": "0x009dcc",
+    "translation_load_address": "0x009de0"
+  },
+  {
+    "id": 141,
+    "original": "SHOWN COLUMNS",
+    "translation": "显示的列",
+    "compare_address": "0x009dfc",
+    "translation_load_address": "0x009e10"
+  },
+  {
+    "id": 142,
+    "original": "Command line",
+    "translation": "命令行",
+    "compare_address": "0x009e2c",
+    "translation_load_address": "0x009e40"
+  },
+  {
+    "id": 143,
+    "original": "Process ID",
+    "translation": "进程ID",
+    "compare_address": "0x009e5c",
+    "translation_load_address": "0x009e70"
+  },
+  {
+    "id": 144,
+    "original": "%CPU Usage",
+    "translation": "CPU使用率",
+    "compare_address": "0x009e8c",
+    "translation_load_address": "0x009ea0"
+  },
+  {
+    "id": 145,
+    "original": "Mach Task State",
+    "translation": "Mach任务状态",
+    "compare_address": "0x009ebc",
+    "translation_load_address": "0x009ed0"
+  },
+  {
+    "id": 146,
+    "original": "Net Bytes Received Delta",
+    "translation": "网络接收字节差值",
+    "compare_address": "0x009eec",
+    "translation_load_address": "0x009f00"
+  },
+  {
+    "id": 147,
+    "original": "Net Bytes Sent Delta",
+    "translation": "网络发送字节差值",
+    "compare_address": "0x009f1c",
+    "translation_load_address": "0x009f30"
+  },
+  {
+    "id": 148,
+    "original": "Net Total Bytes Received",
+    "translation": "网络总接收字节数",
+    "compare_address": "0x009f4c",
+    "translation_load_address": "0x009f60"
+  },
+  {
+    "id": 149,
+    "original": "Net Total Bytes Sent",
+    "translation": "网络总发送字节数",
+    "compare_address": "0x009f7c",
+    "translation_load_address": "0x009f90"
+  },
+  {
+    "id": 150,
+    "original": "Net Total Packets Received",
+    "translation": "网络总接收包数",
+    "compare_address": "0x009fac",
+    "translation_load_address": "0x009fc0"
+  },
+  {
+    "id": 151,
+    "original": "Net Total Packets Sent",
+    "translation": "网络总发送包数",
+    "compare_address": "0x009fdc",
+    "translation_load_address": "0x009ff0"
+  },
+  {
+    "id": 152,
+    "original": "Interrupt Wakeups (Delta)",
+    "translation": "中断唤醒（差值）",
+    "compare_address": "0x00a00c",
+    "translation_load_address": "0x00a020"
+  },
+  {
+    "id": 153,
+    "original": "Idle Wakeups (Delta)",
+    "translation": "空闲唤醒（差值）",
+    "compare_address": "0x00a03c",
+    "translation_load_address": "0x00a050"
+  },
+  {
+    "id": 154,
+    "original": "Timer Wakeups (Delta)",
+    "translation": "计时器唤醒（差值）",
+    "compare_address": "0x00a06c",
+    "translation_load_address": "0x00a080"
+  },
+  {
+    "id": 155,
+    "original": "Maximum Resident Memory Usage",
+    "translation": "最大常驻内存使用",
+    "compare_address": "0x00a09c",
+    "translation_load_address": "0x00a0b0"
+  },
+  {
+    "id": 156,
+    "original": "Physical Memory Footprint",
+    "translation": "物理内存占用",
+    "compare_address": "0x00a0cc",
+    "translation_load_address": "0x00a0e0"
+  },
+  {
+    "id": 157,
+    "original": "Disk I/O Bytes Read Delta",
+    "translation": "磁盘I/O读取字节差值",
+    "compare_address": "0x00a0fc",
+    "translation_load_address": "0x00a110"
+  },
+  {
+    "id": 158,
+    "original": "Disk I/O Bytes Written Delta",
+    "translation": "磁盘I/O写入字节差值",
+    "compare_address": "0x00a12c",
+    "translation_load_address": "0x00a140"
+  },
+  {
+    "id": 159,
+    "original": "Disk I/O Total Bytes Read",
+    "translation": "磁盘I/O总读取字节数",
+    "compare_address": "0x00a15c",
+    "translation_load_address": "0x00a170"
+  },
+  {
+    "id": 160,
+    "original": "Disk I/O Total Bytes Written",
+    "translation": "磁盘I/O总写入字节数",
+    "compare_address": "0x00a18c",
+    "translation_load_address": "0x00a1a0"
+  },
+  {
+    "id": 161,
+    "original": "Total Process Running Time",
+    "translation": "进程总运行时间",
+    "compare_address": "0x00a1bc",
+    "translation_load_address": "0x00a1d0"
+  },
+  {
+    "id": 162,
+    "original": "Parent PID",
+    "translation": "父进程PID",
+    "compare_address": "0x00a1ec",
+    "translation_load_address": "0x00a200"
+  },
+  {
+    "id": 163,
+    "original": "Process Time",
+    "translation": "进程时间",
+    "compare_address": "0x00a21c",
+    "translation_load_address": "0x00a230"
+  },
+  {
+    "id": 164,
+    "original": "Virtual Address Space Usage",
+    "translation": "虚拟地址空间使用",
+    "compare_address": "0x00a24c",
+    "translation_load_address": "0x00a260"
+  },
+  {
+    "id": 165,
+    "original": "Mach Task Role",
+    "translation": "Mach任务角色",
+    "compare_address": "0x00a27c",
+    "translation_load_address": "0x00a290"
+  },
+  {
+    "id": 166,
+    "original": "Raw Process Flags (Hex)",
+    "translation": "原始进程标志（十六进制）",
+    "compare_address": "0x00a2ac",
+    "translation_load_address": "0x00a2c0"
+  },
+  {
+    "id": 167,
+    "original": "Resident Memory Usage",
+    "translation": "常驻内存使用",
+    "compare_address": "0x00a2dc",
+    "translation_load_address": "0x00a2f0"
+  },
+  {
+    "id": 168,
+    "original": "User Id",
+    "translation": "用户ID",
+    "compare_address": "0x00a30c",
+    "translation_load_address": "0x00a320"
+  },
+  {
+    "id": 169,
+    "original": "Thread Count",
+    "translation": "线程计数",
+    "compare_address": "0x00a33c",
+    "translation_load_address": "0x00a350"
+  },
+  {
+    "id": 170,
+    "original": "Mach Ports",
+    "translation": "Mach端口",
+    "compare_address": "0x00a36c",
+    "translation_load_address": "0x00a380"
+  },
+  {
+    "id": 171,
+    "original": "Only columns that fit will actually be shown",
+    "translation": "只有已加入的列才会显示出来-------来了老弟-汉化",
+    "compare_address": "0x00a39c",
+    "translation_load_address": "0x00a3b0"
+  },
+  {
+    "id": 172,
+    "original": "INACTIVE COLUMNS",
+    "translation": "非活动列",
+    "compare_address": "0x00a3cc",
+    "translation_load_address": "0x00a3e0"
+  },
+  {
+    "id": 173,
+    "original": "Total CPU time taken by the process - summed for all CPU cores.",
+    "translation": "进程占用的总CPU时间-所有CPU核心的总和。",
+    "compare_address": "0x00a3fc",
+    "translation_load_address": "0x00a410"
+  },
+  {
+    "id": 174,
+    "original": "Summary of this column indicates OS uptime since kernel boot.",
+    "translation": "此列的摘要指示自内核启动以来的操作系统正常运行时间。",
+    "compare_address": "0x00a42c",
+    "translation_load_address": "0x00a440"
+  },
+  {
+    "id": 175,
+    "original": "Summary of this column indicates total CPU usage.",
+    "translation": "此列的摘要表示CPU的使用总量。",
+    "compare_address": "0x00a45c",
+    "translation_load_address": "0x00a470"
+  },
+  {
+    "id": 176,
+    "original": "Full command line with path and arguments.",
+    "translation": "包含路径和参数的完整命令行。",
+    "compare_address": "0x00a48c",
+    "translation_load_address": "0x00a4a0"
+  },
+  {
+    "id": 177,
+    "original": "Sometimes there are more running processes than there are CPU cores, but this is just a glitch due to kernel state changing while data is collected.",
+    "translation": "有时运行的进程比CPU内核多，但这只是一个小故障，因为在收集数据时内核状态发生了变化。",
+    "compare_address": "0x00a4bc",
+    "translation_load_address": "0x00a4d0"
+  },
+  {
+    "id": 178,
+    "original": "Summary of this column shows two numbers: the first one is the count of processes in running state, the second one is the number of CPU cores.",
+    "translation": "该列的摘要显示了两个数字：第一个是处于运行状态的进程数，第二个是CPU内核数。",
+    "compare_address": "0x00a4ec",
+    "translation_load_address": "0x00a500"
+  },
+  {
+    "id": 179,
+    "original": "On iOS most processes are jobs, thus they are launched by launchd and have parent pid 1.",
+    "translation": "在iOS上，大多数进程都是作业，因此它们由launchd启动，并且具有父pid 1。",
+    "compare_address": "0x00a51c",
+    "translation_load_address": "0x00a530"
+  },
+  {
+    "id": 180,
+    "original": "The sum of CPU usage by all threads of a process.",
+    "translation": "进程中所有线程的CPU使用量之和。",
+    "compare_address": "0x00a54c",
+    "translation_load_address": "0x00a560"
+  },
+  {
+    "id": 181,
+    "original": "This always grows upwards. Kernel is always pid 0, launchd is pid 1.",
+    "translation": "内核总是pid 0，launchd是pid 1。",
+    "compare_address": "0x00a57c",
+    "translation_load_address": "0x00a590"
+  },
+  {
+    "id": 182,
+    "original": "If the name is given in brackets, then the command line cannot be acquired - usually it's either the Kernel or a zombie process.",
+    "translation": "如果名称在括号中，则无法获取命令行——通常是内核或僵尸进程。",
+    "compare_address": "0x00a5ac",
+    "translation_load_address": "0x00a5c0"
+  },
+  {
+    "id": 183,
+    "original": "Sometimes it can even exceed this value, due to reasons explained in this app's 'About' section This is hilarious!",
+    "translation": "有时甚至会超过这个值,原因在此应用程序的（关于）部分有解释",
+    "compare_address": "0x00a5dc",
+    "translation_load_address": "0x00a5f0"
+  },
+  {
+    "id": 184,
+    "original": "Parent is waiting for this child to exec/",
+    "translation": "父进程正在等待此子进程执行/",
+    "compare_address": "0x00a60c",
+    "translation_load_address": "0x00a620"
+  },
+  {
+    "id": 185,
+    "original": "Bad parent: no SIGCHLD when child",
+    "translation": "有问题的父进程：当子进程不存在时，没有SIGCHLD信号",
+    "compare_address": "0x00a63c",
+    "translation_load_address": "0x00a650"
+  },
+  {
+    "id": 186,
+    "original": "Has started profiling",
+    "translation": "已开始性能分析",
+    "compare_address": "0x00a66c",
+    "translation_load_address": "0x00a680"
+  },
+  {
+    "id": 187,
+    "original": "Selecting; wakeup/waiting danger",
+    "translation": "正在选择；唤醒/等待存在风险",
+    "compare_address": "0x00a69c",
+    "translation_load_address": "0x00a6b0"
+  },
+  {
+    "id": 188,
+    "original": "Process was stopped and continued",
+    "translation": "进程已停止并继续",
+    "compare_address": "0x00a6cc",
+    "translation_load_address": "0x00a6e0"
+  },
+  {
+    "id": 189,
+    "original": "Has set privileges since last exec",
+    "translation": "自上次执行以来已设置权限",
+    "compare_address": "0x00a6fc",
+    "translation_load_address": "0x00a710"
+  },
+  {
+    "id": 190,
+    "original": "System process: no signals, stats or",
+    "translation": "系统进程：没有信号，状态或",
+    "compare_address": "0x00a72c",
+    "translation_load_address": "0x00a740"
+  },
+  {
+    "id": 191,
+    "original": "Timing out during sleep",
+    "translation": "在休眠期间超时",
+    "compare_address": "0x00a75c",
+    "translation_load_address": "0x00a770"
+  },
+  {
+    "id": 192,
+    "original": "Debugged process being traced",
+    "translation": "被追踪的调试进程",
+    "compare_address": "0x00a78c",
+    "translation_load_address": "0x00a7a0"
+  },
+  {
+    "id": 193,
+    "original": "Disable address space randomization",
+    "translation": "禁用地址空间随机化",
+    "compare_address": "0x00a7bc",
+    "translation_load_address": "0x00a7d0"
+  },
+  {
+    "id": 194,
+    "original": "Process is working on exiting",
+    "translation": "进程正在退出",
+    "compare_address": "0x00a7ec",
+    "translation_load_address": "0x00a800"
+  },
+  {
+    "id": 195,
+    "original": "Unique ID of a BSD process.",
+    "translation": "BSD进程的唯一ID。",
+    "compare_address": "0x00a81c",
+    "translation_load_address": "0x00a830"
+  },
+  {
+    "id": 196,
+    "original": "This always grows upwards. Kernel is always pid O, launchd is pid 1.",
+    "translation": "这总是向上增长。内核始终是pid 0，launchd是pid 1。",
+    "compare_address": "0x00a84c",
+    "translation_load_address": "0x00a860"
+  },
+  {
+    "id": 197,
+    "original": "The sum of CPU usage by all threads of a process.",
+    "translation": "进程中所有线程的CPU使用量之和。",
+    "compare_address": "0x00a87c",
+    "translation_load_address": "0x00a890"
+  },
+  {
+    "id": 198,
+    "original": "The base thread priority of a process.",
+    "translation": "进程的基础线程优先级。",
+    "compare_address": "0x00a8ac",
+    "translation_load_address": "0x00a8c0"
+  },
+  {
+    "id": 199,
+    "original": "Development Platform Version",
+    "translation": "开发平台版本",
+    "compare_address": "0x00a8dc",
+    "translation_load_address": "0x00a8f0"
+  },
+  {
+    "id": 200,
+    "original": "Minimum OS Version",
+    "translation": "最低操作系统版本",
+    "compare_address": "0x00a90c",
+    "translation_load_address": "0x00a920"
+  },
+  {
+    "id": 201,
+    "original": "Bundle Version",
+    "translation": "bundle版本",
+    "compare_address": "0x00a93c",
+    "translation_load_address": "0x00a950"
+  },
+  {
+    "id": 202,
+    "original": "Bundle Display Name",
+    "translation": "bundle显示名称",
+    "compare_address": "0x00a96c",
+    "translation_load_address": "0x00a980"
+  },
+  {
+    "id": 203,
+    "original": "Bundle Name",
+    "translation": "bundle名称",
+    "compare_address": "0x00a99c",
+    "translation_load_address": "0x00a9b0"
+  },
+  {
+    "id": 204,
+    "original": "Bundle Identifier",
+    "translation": "bundle标识符",
+    "compare_address": "0x00a9cc",
+    "translation_load_address": "0x00a9e0"
+  },
+  {
+    "id": 205,
+    "original": "Development SDK Version",
+    "translation": "开发SDK版本",
+    "compare_address": "0x00a9fc",
+    "translation_load_address": "0x00aa10"
+  },
+  {
+    "id": 206,
+    "original": "Summary",
+    "translation": "摘要",
+    "compare_address": "0x00aa2c",
+    "translation_load_address": "0x00aa40"
+  },
+  {
+    "id": 207,
+    "original": "Modules",
+    "translation": "模块",
+    "compare_address": "0x00aa5c",
+    "translation_load_address": "0x00aa70"
+  },
+  {
+    "id": 208,
+    "original": "Compiler Name",
+    "translation": "编译器名称",
+    "compare_address": "0x00aa8c",
+    "translation_load_address": "0x00aaa0"
+  },
+  {
+    "id": 209,
+    "original": "Flags",
+    "translation": "标志",
+    "compare_address": "0x00aabc",
+    "translation_load_address": "0x00aad0"
+  },
+  {
+    "id": 210,
+    "original": "Process flags represented as a hexadecimal number.",
+    "translation": "以十六进制数字表示的进程标志",
+    "compare_address": "0x00aaec",
+    "translation_load_address": "0x00ab00"
+  },
+  {
+    "id": 211,
+    "original": "This is the default priority set for newly created threads Tap the process and go to",
+    "translation": "这是为新创建的线程设置的默认优先级点击进程并转到",
+    "compare_address": "0x00ab1c",
+    "translation_load_address": "0x00ab30"
+  },
+  {
+    "id": 212,
+    "original": "Summary of this column indicates total number of context switches per update interval.",
+    "translation": "此列的摘要指示每个更新间隔的上下文开关总数。",
+    "compare_address": "0x00ab4c",
+    "translation_load_address": "0x00ab60"
+  },
+  {
+    "id": 213,
+    "original": "Network bytes received by process since launch.",
+    "translation": "自启动以来进程接收的网络字节数。",
+    "compare_address": "0x00ab7c",
+    "translation_load_address": "0x00ab90"
+  },
+  {
+    "id": 214,
+    "original": "Background\tOS X: Normal UI application in the background",
+    "translation": "后台操作系统X：后台的普通UI应用程序",
+    "compare_address": "0x00abac",
+    "translation_load_address": "0x00abc0"
+  },
+  {
+    "id": 215,
+    "original": "This is the number of times the CPU has activated this process to execute its code.",
+    "translation": "这是CPU激活该进程以执行其代码的次数。",
+    "compare_address": "0x00abdc",
+    "translation_load_address": "0x00abf0"
+  },
+  {
+    "id": 216,
+    "original": "This value is inaccurate due to the fact that CocoaTop can only monitor process' sockets",
+    "translation": "此值不准确，因为CocoaTop只能监视进程的套接字",
+    "compare_address": "0x00ac0c",
+    "translation_load_address": "0x00ac20"
+  },
+  {
+    "id": 217,
+    "original": "Maximum resident memory usage since process launch.",
+    "translation": "自进程启动以来的最大驻留内存使用率。",
+    "compare_address": "0x00ac3c",
+    "translation_load_address": "0x00ac50"
+  },
+  {
+    "id": 218,
+    "original": "Number of interrupt wakeups by this process per update interval.",
+    "translation": "此进程在每个更新间隔内的中断唤醒次数。",
+    "compare_address": "0x00ac6c",
+    "translation_load_address": "0x00ac80"
+  },
+  {
+    "id": 219,
+    "original": "Mach system calls are calls to the Mach microkernel within the XNU kernel. There are 180 to 200 Mach services available on iOS depending on kernel version.",
+    "translation": "Mach系统调用是对XNU内核中Mach微内核的调用。iOS上有180到200 Mach的服务，具体取决于内核版本。",
+    "compare_address": "0x00ac9c",
+    "translation_load_address": "0x00acb0"
+  },
+  {
+    "id": 220,
+    "original": "Virtual address space usage.",
+    "translation": "虚拟地址空间使用情况。",
+    "compare_address": "0x00accc",
+    "translation_load_address": "0x00ace0"
+  },
+  {
+    "id": 221,
+    "original": "Total Mach messages sent by the process.",
+    "translation": "进程发送的Mach数消息总数。",
+    "compare_address": "0x00acfc",
+    "translation_load_address": "0x00ad10"
+  },
+  {
+    "id": 222,
+    "original": "Settings",
+    "translation": "设置",
+    "compare_address": "0x00ad2c",
+    "translation_load_address": "0x00ad40"
+  },
+  {
+    "id": 223,
+    "original": "About",
+    "translation": "关于",
+    "compare_address": "0x00ad5c",
+    "translation_load_address": "0x00ad70"
+  },
+  {
+    "id": 224,
+    "original": "Executable Name",
+    "translation": "可执行文件名称",
+    "compare_address": "0x00ad8c",
+    "translation_load_address": "0x00ada0"
+  },
+  {
+    "id": 225,
+    "original": "Executable With Args",
+    "translation": "带参数的可执行文件",
+    "compare_address": "0x00adbc",
+    "translation_load_address": "0x00add0"
+  }
+]

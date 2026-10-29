@@ -1,0 +1,21 @@
+{
+  "Only columns that fit will actually be shown": "仅显示当前屏幕宽度能够容纳的列",
+  "This always grows upwards. Kernel is always pid 0, launchd is pid 1.": "此编号递增。内核的 PID 始终为 0，launchd 的 PID 为 1。",
+  "Unique ID of process' parent - the one that called exec()/fork().": "父进程的唯一 ID，即调用 exec()/fork() 的进程。",
+  "Summary of this column denotes the number of processes executing as user (aka 'mobile').": "此列汇总以 mobile 用户身份运行的进程数。",
+  "CPU usage is expressed in % per CPU core, thus it sums up to cores×100%. Sometimes it can even exceed this value, due to reasons explained in this app's 'About' section. This is hilarious!": "CPU 使用率以每个 CPU 核心的百分比表示，因此合计可达核心数 × 100%。有时甚至会超过此值，原因见本应用的“关于”部分。这很有趣！",
+  "This value is inaccurate due to the fact that CocoaTop can only monitor process' sockets while it is active. Sockets having a lifetime during CocoaTop being inactive are not counted.": "此值并不精确，因为 CocoaTop 只能在自身运行时监控进程的套接字。在 CocoaTop 未运行期间创建并关闭的套接字不会计入。",
+  "Total Mach messages sent by the process.": "进程发送的 Mach 消息总数。",
+  "Total Mach messages received by the process.": "进程接收的 Mach 消息总数。",
+  "Process group id.": "进程组 ID。",
+  "Time elapsed since process launch.": "自进程启动以来经过的时间。",
+  "Has started profiling": "已启动性能分析",
+  "Selecting; wakeup/waiting danger": "正在选择；存在唤醒/等待风险",
+  "Process was stopped and continued": "进程曾停止后又继续",
+  "Timing out during sleep": "休眠期间超时",
+  "Debugged process being traced": "调试进程正在被跟踪",
+  "Application is suspended by SpringBoard (iOS specific)": "应用已被 SpringBoard 挂起（仅限 iOS）",
+  "Debugged process is being traced": "调试进程正在被跟踪",
+  "Not nice: higher priority": "更高优先级",
+  "Nice: lower priority, also see 'Nice' column": "较低优先级，另请参阅“Nice”列"
+}

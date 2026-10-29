@@ -1,298 +1,245 @@
 #import "RootHelperManager.h"
 #import <spawn.h>
 #import <sys/stat.h>
+#import <sys/mman.h>
+#import <sys/socket.h>
+#import <sys/wait.h>
+#import <poll.h>
 #import <fcntl.h>
 #import <unistd.h>
-#import <sys/sysctl.h>
-#import <UIKit/UIKit.h>
-#define POSIX_SPAWN_PERSONA_FLAGS_OVERRIDE 1
-extern int posix_spawnattr_set_persona_np(const posix_spawnattr_t* __restrict, uid_t, uint32_t);
-extern int posix_spawnattr_set_persona_uid_np(const posix_spawnattr_t* __restrict, uid_t);
-extern int posix_spawnattr_set_persona_gid_np(const posix_spawnattr_t* __restrict, uid_t);
+#import <errno.h>
+#import <signal.h>
+#import <time.h>
+#import <stdint.h>
+#import <stdlib.h>
+#import <stdio.h>
+#import <string.h>
 
-@interface RootHelperManager ()
+#define CT_MAX_SHM (256U * 1024U * 1024U)
+static void *CTHelperQueueKey = &CTHelperQueueKey;
+static NSError *CTHelperError(int code) {
+    return [NSError errorWithDomain:NSPOSIXErrorDomain code:code userInfo:nil];
+}
+static int64_t CTMonotonicMS(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (int64_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
 
-@property (atomic) pid_t helperPID;
-@property (atomic) BOOL isRunning;
-
-@property (assign) int stdinFD;
-@property (assign) int stdoutFD;
-@property (assign) int stderrFD;
-
-@property (strong) NSString *shmName;
-@property (assign) int shmFD;
-@property (assign) size_t bufSize;
-
-@property (strong) dispatch_source_t stdoutSource;
-@property (strong) dispatch_source_t stderrSource;
-@property (strong) dispatch_source_t procSource;
-
-@property (strong) NSMutableData  *stdoutBuffer;
-@property (strong) NSMutableData  *stderrBuffer;
-
-// simple FIFO of pending completions
-@property (strong) NSMutableArray<RHCommandCompletion> *pendingCompletions;
-
+@interface RootHelperManager () {
+    dispatch_queue_t _ioQueue;
+    dispatch_source_t _exitSource;
+    pid_t _helperPID;
+    int _socketFD;
+    void *_mapping;
+    size_t _capacity;
+}
 @end
 
 @implementation RootHelperManager
-
 + (instancetype)sharedManager {
-    static RootHelperManager *M;
+    static RootHelperManager *manager;
     static dispatch_once_t once;
-    dispatch_once(&once, ^{
-        M = [self new];
-    });
-    return M;
+    dispatch_once(&once, ^{ manager = [self new]; });
+    return manager;
 }
-
 - (instancetype)init {
     if ((self = [super init])) {
-        _pendingCompletions = [NSMutableArray array];
-        _stdoutBuffer = [NSMutableData data];
-        _stderrBuffer = [NSMutableData data];
+        _socketFD = -1;
+        _ioQueue = dispatch_queue_create("com.crctdd.cocoatop.helper", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_set_specific(_ioQueue, CTHelperQueueKey, (__bridge void *)self, NULL);
     }
     return self;
 }
-
-// Launch helper with shared-memory FD; manager will allocate a local kinfo_proc buffer
-- (BOOL)startHelperWithPath:(NSString*)helperPath
-                      error:(NSError**)outError
-{
-    if (self.isRunning) return YES;
-    int maxproc = 0;
-    int mibMax[2] = { CTL_KERN, KERN_MAXPROC };
-    size_t lenMax = sizeof(maxproc);
-    if (sysctl(mibMax, 2, &maxproc, &lenMax, NULL, 0) < 0) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                         code:errno
-                                                     userInfo:nil];
-        return NO;
-    }
-    self.bufSize = maxproc * sizeof(*self.kp);
-    
-    // 2. Create shared memory region
-    self.shmName = [NSString stringWithFormat:@"/cocoatop_%d", getpid()];
-    self.shmFD = shm_open(self.shmName.UTF8String, O_CREAT | O_RDWR , S_IRUSR | S_IWUSR);
-    if (self.shmFD < 0) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                      code:errno
-                                                  userInfo:nil];
-        return NO;
-    }
-    if (ftruncate(self.shmFD, self.bufSize) < 0) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                      code:errno
-                                                  userInfo:nil];
-        return NO;
-    }
-    
-    int inPipe[2], outPipe[2], errPipe[2];
-    if (pipe(inPipe) || pipe(outPipe) || pipe(errPipe)) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                      code:errno
-                                                  userInfo:nil];
-        return NO;
-    }
-    
-    // 3. mmap local mapping for reads (optional)
-    self.kp = mmap(NULL, self.bufSize,
-                   PROT_READ | PROT_WRITE,
-                   MAP_SHARED, self.shmFD, 0);
-    if (self.kp == MAP_FAILED) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                      code:errno
-                                                  userInfo:nil];
-        return NO;
-    }
-    
-    posix_spawn_file_actions_t actions;
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_adddup2(&actions, inPipe[0], STDIN_FILENO);
-    posix_spawn_file_actions_addclose(&actions, inPipe[1]);
-    posix_spawn_file_actions_adddup2(&actions, outPipe[1], STDOUT_FILENO);
-    posix_spawn_file_actions_addclose(&actions, outPipe[0]);
-    posix_spawn_file_actions_adddup2(&actions, errPipe[1], STDERR_FILENO);
-    posix_spawn_file_actions_addclose(&actions, errPipe[0]);
-
-    posix_spawnattr_t attr;
-    posix_spawnattr_init(&attr);
-    posix_spawnattr_set_persona_np(&attr, 99, POSIX_SPAWN_PERSONA_FLAGS_OVERRIDE);
-    posix_spawnattr_set_persona_uid_np(&attr, 0);
-    posix_spawnattr_set_persona_gid_np(&attr, 0);
-    
-    // 5. Pass shmFD to helper
-    char bufArg[8];
-    snprintf(bufArg, sizeof(bufArg), "%zu", self.bufSize);
-    char *argv[] = { (char*)[helperPath UTF8String], bufArg ,NULL };
-    pid_t pid;
-    int err = posix_spawn(&pid,
-                          [helperPath UTF8String],
-                          &actions,
-                          &attr,
-                          argv,
-                          NULL);
-    posix_spawn_file_actions_destroy(&actions);
-    posix_spawnattr_destroy(&attr);
-    
-    if (err != 0) {
-        if (outError) *outError = [NSError errorWithDomain:NSPOSIXErrorDomain
-                                                      code:err
-                                                  userInfo:nil];
-        return NO;
-    }
-    
-    // 6. Store fds & pid, close unused ends
-    self.helperPID = pid;
-    self.stdinFD   = inPipe[1];
-    self.stdoutFD  = outPipe[0];
-    self.stderrFD  = errPipe[0];
-    self.isRunning = YES;
-    
-    // 7. Kick off I/O and proc watcher
-    [self setupStdoutSource];
-    [self setupStderrSource];
-    [self setupProcWatcher];
-    
-    return YES;
+- (void)onQueue:(dispatch_block_t)block {
+    if (dispatch_get_specific(CTHelperQueueKey) == (__bridge void *)self) block();
+    else dispatch_sync(_ioQueue, block);
 }
-
-
-- (void)setupStdoutSource {
-    dispatch_queue_t q = dispatch_get_global_queue(QOS_CLASS_UTILITY, 0);
-    self.stdoutSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
-                                               self.stdoutFD, 0, q);
-    dispatch_source_set_event_handler(self.stdoutSource, ^{
-        size_t available = dispatch_source_get_data(self.stdoutSource);
-        if (available == 0) return; // EOF?
-        uint8_t buf[50];
-        ssize_t r = read(self.stdoutFD, buf, MIN(sizeof(buf), available));
-        NSLog(@"stdout: %s", buf);
-        if (r > 0) {
-            [self.stdoutBuffer appendBytes:buf length:r];
-            [self checkForLineInBuffer:self.stdoutBuffer isStdout:YES];
+- (void)cleanup {
+    if (_exitSource) { dispatch_source_cancel(_exitSource); _exitSource = nil; }
+    if (_socketFD >= 0) { close(_socketFD); _socketFD = -1; }
+    if (_helperPID > 0) {
+        /* Keep ownership of the child until reaped: no stale PID can be killed. */
+        kill(_helperPID, SIGKILL);
+        while (waitpid(_helperPID, NULL, 0) < 0 && errno == EINTR) {}
+        _helperPID = 0;
+    }
+    if (_mapping) { munmap(_mapping, _capacity); _mapping = NULL; }
+    _capacity = 0;
+}
+- (NSString *)readLine {
+    char line[128];
+    size_t used = 0;
+    int64_t deadline = CTMonotonicMS() + 5000;
+    while (used < sizeof(line) - 1) {
+        int64_t remaining = deadline - CTMonotonicMS();
+        if (remaining <= 0) { errno = ETIMEDOUT; return nil; }
+        struct pollfd pfd = { _socketFD, POLLIN, 0 };
+        int ready = poll(&pfd, 1, (int)remaining);
+        if (ready < 0 && errno == EINTR) continue;
+        if (ready <= 0) { if (!ready) errno = ETIMEDOUT; return nil; }
+        ssize_t n = read(_socketFD, line + used, 1);
+        if (n < 0 && (errno == EINTR || errno == EAGAIN)) continue;
+        if (n <= 0) { if (!n) errno = EPIPE; return nil; }
+        if (line[used] == '\n') {
+            line[used] = 0;
+            NSString *result = [NSString stringWithUTF8String:line];
+            if (!result) errno = EPROTO;
+            return result;
         }
-    });
-    dispatch_resume(self.stdoutSource);
+        used++;
+    }
+    errno = EOVERFLOW;
+    return nil;
 }
-
-- (void)setupStderrSource {
-    dispatch_queue_t q = dispatch_get_global_queue(QOS_CLASS_UTILITY, 0);
-    self.stderrSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
-                                               self.stderrFD, 0, q);
-    dispatch_source_set_event_handler(self.stderrSource, ^{
-        size_t available = dispatch_source_get_data(self.stderrSource);
-        if (available == 0) return;
-        uint8_t buf[100];
-        ssize_t r = read(self.stderrFD, buf, MIN(sizeof(buf), available));
-        NSLog(@"stderr: %s", buf);
-        if (r > 0) {
-            [self.stderrBuffer appendBytes:buf length:r];
-            [self checkForLineInBuffer:self.stderrBuffer isStdout:NO];
-        }
-    });
-    dispatch_resume(self.stderrSource);
-}
-
-- (void)setupProcWatcher {
-    dispatch_queue_t q = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0);
-    self.procSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
-                                             self.helperPID,
-                                             DISPATCH_PROC_EXIT, q);
-    dispatch_source_set_event_handler(self.procSource, ^{
-        // helper died
-        self.isRunning = NO;
-        dispatch_source_cancel(self.stdoutSource);
-        dispatch_source_cancel(self.stderrSource);
-        // invoke any pending completions with an error
-        for (RHCommandCompletion cb in self.pendingCompletions) {
-            cb(nil, nil, -1);
-        }
-        [self.pendingCompletions removeAllObjects];
-        // terminate app
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"Helper has been terminated!!! Im leaving byee");
-            [[UIApplication sharedApplication] performSelector:@selector(suspend)];
-            sleep(1);
-            exit(1);
-        });
-    });
-    dispatch_resume(self.procSource);
-}
-
-/// Called whenever we see “\n” in the buffer
-- (void)checkForLineInBuffer:(NSMutableData*)buf isStdout:(BOOL)isStdout {
-    const void *bytes = buf.bytes;
-    NSUInteger len = buf.length;
-    for (NSUInteger i = 0; i < len; i++) {
-        if (((char*)bytes)[i] == '\n') {
-            // extract line up to i
-            NSData *lineData = [buf subdataWithRange:NSMakeRange(0, i+1)];
-            NSString *line = [[NSString alloc] initWithData:lineData
-                                                   encoding:NSUTF8StringEncoding];
-            // trim newline
-            line = [line stringByTrimmingCharactersInSet:
-                    [NSCharacterSet newlineCharacterSet]];
-            // remove that chunk from buf
-            [buf replaceBytesInRange:NSMakeRange(0, i+1)
-                           withBytes:NULL length:0];
-            
-            // fire the next pending completion
-            RHCommandCompletion cb = nil;
-            @synchronized(self.pendingCompletions) {
-                if (self.pendingCompletions.count) {
-                    cb = self.pendingCompletions.firstObject;
-                    [self.pendingCompletions removeObjectAtIndex:0];
+- (BOOL)startHelperWithPath:(NSString *)helperPath error:(NSError **)outError {
+    __block BOOL success = NO;
+    __block int failure = 0;
+    [self onQueue:^{
+        if (self->_helperPID > 0) { success = YES; return; }
+        int shmFD = -1, sockets[2] = {-1, -1};
+        NSString *name = nil;
+        BOOL ownsSHM = NO;
+        posix_spawn_file_actions_t actions;
+        posix_spawnattr_t attr;
+        BOOL actionsReady = NO, attrReady = NO;
+        struct stat st;
+        int maxproc = 0;
+        int mib[2] = { CTL_KERN, KERN_MAXPROC };
+        size_t len = sizeof(maxproc);
+        do {
+            if (stat(helperPath.fileSystemRepresentation, &st)) { failure = errno; break; }
+            if (!S_ISREG(st.st_mode) || st.st_uid != 0 || (st.st_mode & 0022) ||
+                !(st.st_mode & S_IXUSR) || (geteuid() != 0 && !(st.st_mode & S_ISUID))) {
+                failure = EPERM; break;
+            }
+            if (sysctl(mib, 2, &maxproc, &len, NULL, 0)) { failure = errno; break; }
+            if (maxproc <= 0 || (size_t)maxproc > CT_MAX_SHM / sizeof(struct kinfo_proc)) {
+                failure = EOVERFLOW; break;
+            }
+            self->_capacity = (size_t)maxproc * sizeof(struct kinfo_proc);
+            /* Darwin shm names are short; never infer the name from getppid(). */
+            name = [@"/ct_" stringByAppendingString:
+                    [[[NSUUID UUID] UUIDString] substringToIndex:24]];
+            shmFD = shm_open(name.UTF8String, O_CREAT | O_EXCL | O_RDWR, 0600);
+            if (shmFD < 0) { failure = errno; break; }
+            ownsSHM = YES;
+            if (fchmod(shmFD, 0600) || ftruncate(shmFD, (off_t)self->_capacity)) {
+                failure = errno; break;
+            }
+            fcntl(shmFD, F_SETFD, FD_CLOEXEC);
+            void *mapping = mmap(NULL, self->_capacity, PROT_READ, MAP_SHARED, shmFD, 0);
+            if (mapping == MAP_FAILED) { failure = errno; break; }
+            self->_mapping = mapping;
+            if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockets)) { failure = errno; break; }
+            int one = 1;
+            if (setsockopt(sockets[0], SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one))) {
+                failure = errno; break;
+            }
+            fcntl(sockets[0], F_SETFD, FD_CLOEXEC);
+            fcntl(sockets[1], F_SETFD, FD_CLOEXEC);
+            /* File actions must not accidentally close a remapped stdio FD. */
+            for (int i = 0; i < 2; i++) {
+                if (sockets[i] <= STDERR_FILENO) {
+                    int replacement = fcntl(sockets[i], F_DUPFD_CLOEXEC, STDERR_FILENO + 1);
+                    if (replacement < 0) { failure = errno; break; }
+                    close(sockets[i]); sockets[i] = replacement;
                 }
             }
-            if (cb) {
-                if (isStdout) {
-                    cb(line, nil, 0);
-                } else {
-                    cb(nil, line, 0);
-                }
+            if (failure) break;
+            failure = posix_spawnattr_init(&attr);
+            if (failure) break;
+            attrReady = YES;
+            failure = posix_spawnattr_setflags(&attr, POSIX_SPAWN_CLOEXEC_DEFAULT);
+            if (failure) break;
+            failure = posix_spawn_file_actions_init(&actions);
+            if (failure) break;
+            actionsReady = YES;
+            if ((failure = posix_spawn_file_actions_adddup2(&actions, sockets[1], STDIN_FILENO)) ||
+                (failure = posix_spawn_file_actions_adddup2(&actions, sockets[1], STDOUT_FILENO)) ||
+                (failure = posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0)) ||
+                (failure = posix_spawn_file_actions_addclose(&actions, sockets[0])) ||
+                (failure = posix_spawn_file_actions_addclose(&actions, sockets[1]))) break;
+            char sizeArg[32];
+            snprintf(sizeArg, sizeof(sizeArg), "%zu", self->_capacity);
+            char *args[] = { (char *)helperPath.fileSystemRepresentation, (char *)name.UTF8String, sizeArg, NULL };
+            char *env[] = { "PATH=/usr/bin:/bin", "LANG=C", NULL };
+            failure = posix_spawn(&self->_helperPID, helperPath.fileSystemRepresentation, &actions, &attr, args, env);
+            if (failure) { self->_helperPID = 0; break; }
+            close(sockets[1]); sockets[1] = -1;
+            self->_socketFD = sockets[0]; sockets[0] = -1;
+            NSString *greeting = [self readLine];
+            if (![greeting isEqualToString:@"READY 1"]) {
+                failure = greeting ? EPROTO : errno; break;
             }
-            break;
+            pid_t watchedPID = self->_helperPID;
+            self->_exitSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, watchedPID, DISPATCH_PROC_EXIT, self->_ioQueue);
+            if (!self->_exitSource) { failure = ENOMEM; break; }
+            dispatch_source_set_event_handler(self->_exitSource, ^{
+                if (self->_helperPID == watchedPID) [self cleanup];
+            });
+            dispatch_resume(self->_exitSource);
+            success = YES;
+        } while (0);
+        if (actionsReady) posix_spawn_file_actions_destroy(&actions);
+        if (attrReady) posix_spawnattr_destroy(&attr);
+        for (int i = 0; i < 2; i++) if (sockets[i] >= 0) close(sockets[i]);
+        if (shmFD >= 0) close(shmFD);
+        /* After READY both sides hold mappings; remove the name immediately. */
+        if (ownsSHM) shm_unlink(name.UTF8String);
+        if (!success) [self cleanup];
+    }];
+    if (!success && outError) *outError = CTHelperError(failure ?: EIO);
+    return success;
+}
+- (NSString *)requestProcessList {
+    if (_socketFD < 0) { errno = ENOTCONN; return nil; }
+    const char command[] = "getprocs\n";
+    size_t sent = 0;
+    while (sent < sizeof(command) - 1) {
+        ssize_t n = write(_socketFD, command + sent, sizeof(command) - 1 - sent);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0) {
+            int error = n ? errno : EPIPE;
+            [self cleanup]; errno = error; return nil;
         }
+        sent += (size_t)n;
     }
+    NSString *line = [self readLine];
+    if (!line) { int error = errno; [self cleanup]; errno = error; }
+    return line;
 }
-
-- (void)sendCommand:(NSString*)command
-         completion:(RHCommandCompletion)completion
-{
-    if (! self.isRunning) {
-        completion(nil, nil, -1);
-        return;
-    }
-    // ensure newline
-    NSString *cmd = command;
-    if (![cmd hasSuffix:@"\n"]) cmd = [cmd stringByAppendingString:@"\n"];
-    
-    // enqueue callback
-    @synchronized(self.pendingCompletions) {
-        [self.pendingCompletions addObject:completion];
-    }
-    
-    // write
-    const char *utf8 = cmd.UTF8String;
-    write(self.stdinFD, utf8, strlen(utf8));
+- (void)sendCommand:(NSString *)command completion:(RHCommandCompletion)completion {
+    dispatch_async(_ioQueue, ^{
+        if (![command isEqualToString:@"getprocs"] && ![command isEqualToString:@"getprocs\n"]) {
+            completion(nil, @"Unsupported helper command", -EINVAL); return;
+        }
+        NSString *line = [self requestProcessList];
+        int error = errno;
+        completion(line, line ? nil : [NSString stringWithUTF8String:strerror(error)], line ? 0 : -error);
+    });
 }
-
+- (NSData *)processSnapshotWithError:(NSError **)outError {
+    __block NSData *snapshot = nil;
+    __block int failure = 0;
+    [self onQueue:^{
+        NSString *line = [self requestProcessList];
+        if (!line) { failure = errno; return; }
+        if ([line isEqualToString:@"-1"]) { failure = EIO; return; }
+        const char *text = line.UTF8String;
+        char *end = NULL;
+        errno = 0;
+        unsigned long long count = strtoull(text, &end, 10);
+        if (errno || !text[0] || text[0] < '0' || text[0] > '9' || *end ||
+            count > self->_capacity / sizeof(struct kinfo_proc)) {
+            failure = EPROTO; [self cleanup]; return;
+        }
+        snapshot = [NSData dataWithBytes:self->_mapping length:(NSUInteger)count * sizeof(struct kinfo_proc)];
+    }];
+    if (!snapshot && outError) *outError = CTHelperError(failure ?: EIO);
+    return snapshot;
+}
 - (void)stopHelper {
-    if (! self.isRunning) return;
-    self.isRunning = NO;
-    kill(self.helperPID, SIGTERM);
-    // cleanup
-    dispatch_source_cancel(self.stdoutSource);
-    dispatch_source_cancel(self.stderrSource);
-    dispatch_source_cancel(self.procSource);
-    close(self.stdinFD);
-    close(self.stdoutFD);
-    close(self.stderrFD);
-    munmap(self.kp, self.bufSize);
-    close(self.shmFD);
-    shm_unlink(self.shmName.UTF8String);
-    [[UIApplication sharedApplication] performSelector:@selector(suspend)];
+    [self onQueue:^{ [self cleanup]; }];
 }
-
 @end

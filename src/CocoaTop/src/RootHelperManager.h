@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -7,24 +8,15 @@ typedef void(^RHCommandCompletion)(NSString * _Nullable stdoutString,
                                    NSInteger exitCode);
 
 @interface RootHelperManager : NSObject
-
-@property (assign) struct kinfo_proc *kp;
-
 + (instancetype)sharedManager;
-
-/// Must call once (e.g. in application:didFinishLaunching…)
-- (BOOL)startHelperWithPath:(NSString*)helperPath
-                      error:(NSError**)outError;
-
-/// Send a single-line command (will append “\n” if missing),
-/// and invoke the completion block once you get a newline back.
-/// If the helper crashes before replying, you’ll get exitCode < 0.
-- (void)sendCommand:(NSString*)command
-         completion:(RHCommandCompletion)completion;
-
-/// Tear it down (closes pipes, kills helper)
+/// Requires a root-owned, non-group/world-writable setuid helper installed by deb.
+- (BOOL)startHelperWithPath:(NSString *)helperPath error:(NSError * _Nullable * _Nullable)outError;
+/// Completion runs on the private serial I/O queue, never the main queue.
+/// Only getprocs is supported; a response or failure arrives within 5 seconds.
+- (void)sendCommand:(NSString *)command completion:(RHCommandCompletion)completion;
+/// An owned, immutable snapshot. Never exposes a mapping that cleanup can unmap.
+- (nullable NSData *)processSnapshotWithError:(NSError * _Nullable * _Nullable)error;
 - (void)stopHelper;
-
 @end
 
 NS_ASSUME_NONNULL_END

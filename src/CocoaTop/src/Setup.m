@@ -1,3 +1,5 @@
+#import "CTPreferences.h"
+#import "CTLocalization.h"
 #import "Compat.h"
 #import "Setup.h"
 
@@ -19,7 +21,7 @@
 	self = [super initWithStyle:UITableViewStyleGrouped];
 	self.list = list;
 	self.option = option;
-	self.value = [[NSUserDefaults standardUserDefaults] stringForKey:option];
+	self.value = [[CTPreferences standardUserDefaults] stringForKey:option];
 	return self;
 }
 
@@ -31,7 +33,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-	self.navigationItem.title = @"Settings";
+	self.navigationItem.title = CTLocalizedString(@"Settings");
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -41,7 +43,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	return @"Choose";
+	return CTLocalizedString(@"Choose");
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -54,15 +56,15 @@
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Setup"];
 	if (cell == nil)
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Setup"];
-	cell.textLabel.text = self.list[indexPath.row];
-	cell.accessoryType = [self.value isEqualToString:cell.textLabel.text] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+	cell.textLabel.text = CTLocalizedString(self.list[indexPath.row]);
+	cell.accessoryType = [self.value isEqualToString:self.list[indexPath.row]] ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	self.value = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
-	[[NSUserDefaults standardUserDefaults] setObject:self.value forKey:self.option];
+	self.value = self.list[indexPath.row];
+	[[CTPreferences standardUserDefaults] setObject:self.value forKey:self.option];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -101,21 +103,21 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	if (buttonIndex == 1) {
-		[[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+		[[CTPreferences standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
 		[self.tableView reloadData];
 	}
 }
 
 - (IBAction)factoryReset
 {
-	[[[UIAlertView alloc] initWithTitle:@"Reset" message:@"Reset settings to default values?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil] show];
+	[[[UIAlertView alloc] initWithTitle:CTLocalizedString(@"Reset") message:CTLocalizedString(@"Reset settings to default values?") delegate:self cancelButtonTitle:CTLocalizedString(@"Cancel") otherButtonTitles:CTLocalizedString(@"OK"), nil] show];
 }
 
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	self.navigationItem.title = @"Settings";
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Reset" style:UIBarButtonItemStylePlain
+	self.navigationItem.title = CTLocalizedString(@"Settings");
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CTLocalizedString(@"Reset") style:UIBarButtonItemStylePlain
 		target:self action:@selector(factoryReset)];
 	optionsList = @[
 		[OptionItem withAccessory:[UILabel class] key:@"UpdateInterval" label:@"Update interval (seconds)" chooseFrom:@[@"0.5",@"1",@"2",@"3",@"5",@"10",@"Never"]],
@@ -148,7 +150,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	return @"General";
+	return CTLocalizedString(@"General");
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -160,7 +162,7 @@
 {
 	UISwitch *onOff = (UISwitch *)sender;
 	OptionItem *option = optionsList[onOff.tag - 1];
-	[[NSUserDefaults standardUserDefaults] setBool:onOff.on forKey:option.optionKey];
+	[[CTPreferences standardUserDefaults] setBool:onOff.on forKey:option.optionKey];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -171,11 +173,11 @@
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:rid];
 	OptionItem *option = optionsList[indexPath.row];
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-	cell.textLabel.text = option.label;
+	cell.textLabel.text = CTLocalizedString(option.label);
 	if (option.accessory == [UISwitch class]) {
 		UISwitch *onOff = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[onOff addTarget:self action:@selector(flipSwitch:) forControlEvents:UIControlEventValueChanged];
-		onOff.on = [[NSUserDefaults standardUserDefaults] boolForKey:option.optionKey];
+		onOff.on = [[CTPreferences standardUserDefaults] boolForKey:option.optionKey];
 //		onOff.onTintColor = [UIColor redColor];
 		onOff.tag = indexPath.row + 1;
 		cell.accessoryView = onOff;
@@ -192,12 +194,12 @@
 				label.font = [UIFont systemFontOfSize:16.0];
 				label.textColor = [UIColor grayColor];
 				label.backgroundColor = [UIColor clearColor];
-				label.text = [[NSUserDefaults standardUserDefaults] stringForKey:option.optionKey];
+				label.text = CTLocalizedString([[CTPreferences standardUserDefaults] stringForKey:option.optionKey]);
 				label.tag = indexPath.row + 1;
 				label.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth;
 				[cell.contentView addSubview:label];
 			} else
-				label.text = [[NSUserDefaults standardUserDefaults] stringForKey:option.optionKey];
+				label.text = CTLocalizedString([[CTPreferences standardUserDefaults] stringForKey:option.optionKey]);
 		}
 	}
 	return cell;

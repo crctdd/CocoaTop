@@ -1,0 +1,53 @@
+{
+  "original_rules": 225,
+  "unique_originals": 222,
+  "localizable_keys": 388,
+  "overrides": 19,
+  "supplements": 132,
+  "literal_calls": 48,
+  "unique_literal_call_keys": 38,
+  "model_occurrences": {
+    "Column_ios.h": {
+      "psColumnWithName:": 52,
+      "fullname:": 52,
+      "descr:": 44
+    },
+    "Column_simulator.h": {
+      "psColumnWithName:": 52,
+      "fullname:": 52,
+      "descr:": 44
+    },
+    "Column.m": {
+      "psColumnWithName:": 19,
+      "fullname:": 19
+    }
+  },
+  "description_occurrences_with_preserved_newlines": 88,
+  "model_nonempty_occurrences": 318,
+  "model_translated_occurrences": 287,
+  "model_nonempty_unique": 176,
+  "model_translated_unique": 159,
+  "unchanged_symbolic_headers": [
+    "%",
+    "BSD",
+    "CSw",
+    "F",
+    "FD",
+    "Mach",
+    "Nice",
+    "PID",
+    "PPID",
+    "Pri",
+    "R",
+    "S",
+    "TID",
+    "TTY",
+    "ΣBSD",
+    "ΣCSw",
+    "ΣMach"
+  ],
+  "extracted_original_exact_source_matches": 93,
+  "extracted_original_normalized_substring_matches": 197,
+  "rule_resource_sha256": "b083b56079195e9dc20ff030da976e024e48512cc8f6507b508f7b84bbb83f5a",
+  "checks": "PASS; static only; no compiler/device validation"
+}

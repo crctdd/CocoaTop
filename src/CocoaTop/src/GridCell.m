@@ -1,3 +1,4 @@
+#import "CTPreferences.h"
 #import <objc/runtime.h>
 #import "Compat.h"
 #import "GridCell.h"
@@ -95,8 +96,8 @@
 	// Create new views
 	self.labels = [NSMutableArray arrayWithCapacity:columns.count-1];
 	self.dividers = [NSMutableArray arrayWithCapacity:columns.count];
-	self.extendArgsLabel = [[NSUserDefaults standardUserDefaults] boolForKey:@"FullWidthCommandLine"];
-	self.colorDiffs = [[NSUserDefaults standardUserDefaults] boolForKey:@"ColorDiffs"];
+	self.extendArgsLabel = [[CTPreferences standardUserDefaults] boolForKey:@"FullWidthCommandLine"];
+	self.colorDiffs = [[CTPreferences standardUserDefaults] boolForKey:@"ColorDiffs"];
 	self.textLabel.font = size.height > 40 ? [UIFont systemFontOfSize:18.0] : [UIFont systemFontOfSize:12.0];
 	if (size.height > 40 && self.extendArgsLabel)
 		size.height /= 2;
