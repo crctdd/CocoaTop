@@ -12,6 +12,10 @@ FINALPACKAGE = 1
 export TARGET ARCHS DEBUG FINALPACKAGE THEOS_PACKAGE_SCHEME
 
 include $(THEOS)/makefiles/common.mk
+# macOS runner files belong to uid 501; encode root ownership in the deb
+# rather than relying on the host filesystem or weakening package checks.
+_THEOS_PLATFORM_DPKG_DEB = $(THEOS_PROJECT_DIR)/scripts/dpkg-deb-root
+_THEOS_PLATFORM_DPKG_DEB_COMPRESSION = xz
 SUBPROJECTS += src/CocoaTop-helper src/CocoaTop
 include $(THEOS_MAKE_PATH)/aggregate.mk
 

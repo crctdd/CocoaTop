@@ -1,0 +1,4 @@
+#!/bin/sh
+# Generate numeric root ownership in the archive without privileged chown.
+# Preserve staged executable/setuid modes; package audit verifies both.
+exec dpkg-deb --root-owner-group "$@"
