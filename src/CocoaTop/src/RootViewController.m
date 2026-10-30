@@ -93,7 +93,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
-	bool isPhone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+	bool isPhone = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone;
 	[self popupMenuWithItems:@[CTLocalizedString(@"Settings"), CTLocalizedString(@"Columns"), CTLocalizedString(@"Quick Guide"), CTLocalizedString(@"About")] selected:-1 aligned:UIControlContentHorizontalAlignmentLeft];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarHamburger"] style:UIBarButtonItemStylePlain
 		target:self action:@selector(popupMenuToggle)];
@@ -211,7 +211,7 @@
 	[footer updateSummaryWithColumns:columns procs:procs];
 	// Status bar
 // Also add: Uptime, CPU Freq, Cores, Cache L1/L2
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+//    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
 //		statusLabel.text = [NSString stringWithFormat:CTLocalizedString(@"Free: %.1f MB  CPU: %.1f%%"),
 //			(float)procs.memFree / 1024 / 1024,
 //			(float)procs.totalCpu / 10];
@@ -233,7 +233,7 @@
         }
         shortLabel = (sizeClass == UIUserInterfaceSizeClassCompact);
     } else {
-        shortLabel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+        shortLabel = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone;
     }
     
     if (shortLabel) {

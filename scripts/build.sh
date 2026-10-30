@@ -31,7 +31,9 @@ build_one() (
     {
         echo "scheme=$scheme architectures=$archs target=${TARGET:-iphone:clang:16.5:15.0}"
         "$MAKE_BIN" clean THEOS_PACKAGE_DIR="$packages"
-        "$MAKE_BIN" package THEOS_PACKAGE_DIR="$packages" DEBUG=0 FINALPACKAGE=1
+        # Keep collecting independent compiler diagnostics; make still fails
+        # if any object/link/package target fails, before package verification.
+        "$MAKE_BIN" -k package THEOS_PACKAGE_DIR="$packages" DEBUG=0 FINALPACKAGE=1
         shopt -s nullglob
         debs=("$packages/"*.deb)
         [[ ${#debs[@]} -eq 1 ]] || { echo "Expected one fresh deb, found ${#debs[@]}" >&2; exit 1; }
