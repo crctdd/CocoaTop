@@ -14,7 +14,7 @@ table={dec(k):dec(v) for k,v in pairs}; assert len(table)==len(pairs)
 rules=json.loads((res/'translation-rules.json').read_text());first={}
 for r in rules:first.setdefault(r['original'],r['translation'])
 assert len(rules)==225 and len(first)==222
-assert (res/'translation-rules.json').read_bytes()==(root.parent/'analysis/translations.json').read_bytes()
+assert hashlib.sha256((res/'translation-rules.json').read_bytes()).hexdigest() == 'b083b56079195e9dc20ff030da976e024e48512cc8f6507b508f7b84bbb83f5a', 'Extracted rule evidence changed'
 overrides=json.loads((res/'translation-overrides.json').read_text());supp=json.loads((res/'translation-supplements.json').read_text())
 assert not set(supp).intersection(first), 'Supplements must not silently override extracted values'
 for k,v in first.items():
