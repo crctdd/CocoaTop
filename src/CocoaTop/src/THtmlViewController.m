@@ -8,23 +8,21 @@
 {
 	[super viewDidLoad];
 	self.navigationItem.title = CTLocalizedString(self.pageTitle);
-	self.indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+	self.indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
 	self.indicator.color = [UIColor blackColor];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.indicator];
 
-	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+	WKWebView *webView = [[WKWebView alloc] initWithFrame:CGRectZero];
 	webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	webView.dataDetectorTypes = UIDataDetectorTypeNone;
-	webView.scalesPageToFit = YES;
-	webView.delegate = self;
+	webView.navigationDelegate = self;
 
-	[webView loadRequest:[[NSURLRequest alloc] initWithURL:self.url]];
+	[webView loadFileURL:self.url allowingReadAccessToURL:self.url.URLByDeletingLastPathComponent];
 	self.view = webView;
 }
 
 - (BOOL)navigationShouldPopOnBackButton
 {
-	UIWebView *webView = (UIWebView *)self.view;
+	WKWebView *webView = (WKWebView *)self.view;
 	if (webView.canGoBack) {
 		[webView goBack];
 		return NO;
@@ -32,14 +30,24 @@
 	return YES;
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
 	[self.indicator startAnimating];
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
 	[self.indicator stopAnimating];
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
+{
+    [self.indicator stopAnimating];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error
+{
+    [self.indicator stopAnimating];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
