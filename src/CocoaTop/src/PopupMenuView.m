@@ -94,7 +94,10 @@
 	button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	button.frame = CGRectMake(0.0, position * (1.0 + buttonHeight), 0.0, buttonHeight);
 	button.tag = position;
-	button.contentEdgeInsets = UIEdgeInsetsMake(0, buttonHeight / 2, 0, buttonHeight / 2);
+	UIButtonConfiguration *configuration = [UIButtonConfiguration plainButtonConfiguration];
+	configuration.contentInsets = NSDirectionalEdgeInsetsMake(0, buttonHeight / 2, 0, buttonHeight / 2);
+	configuration.baseForegroundColor = UIColor.whiteColor;
+	button.configuration = configuration;
 	button.selected = self.popupMenuSelected == position;
 	button.contentHorizontalAlignment = align;
 	[button addTarget:self action:@selector(popupMenuItemTapped:) forControlEvents:UIControlEventTouchUpInside];
