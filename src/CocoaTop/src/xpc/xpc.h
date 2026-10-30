@@ -2,11 +2,17 @@
 
 #ifndef __XPC_H__
 #define __XPC_H__
-/* Use the complete SDK/Theos public XPC declarations, not the legacy
- * base-only shim (which neither defines XPC objects nor the umbrella guard). */
-#include <xpc/xpc.h>
+/* iPhoneOS SDKs omit the public XPC umbrella. Model the OS-object ABI
+ * using the SDK's own ownership macros, so ARC retains/releases XPC objects
+ * just like dispatch objects instead of treating pipes as unowned void *. */
+#include <stddef.h>
+#include <stdint.h>
+#include <mach/mach.h>
+#include <os/object.h>
 
-typedef void *xpc_pipe_t;
+OS_OBJECT_DECL(xpc_object);
+OS_OBJECT_DECL(xpc_connection);
+typedef xpc_object_t xpc_pipe_t;
 
 __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0)
 //XPC_EXPORT XPC_NONNULL1
@@ -32,7 +38,7 @@ char* xpc_copy_description(xpc_object_t object);
 __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0)
 //XPC_EXPORT XPC_MALLOC XPC_RETURNS_RETAINED XPC_WARN_RESULT
 xpc_object_t
-xpc_dictionary_create(const char * const *keys, const xpc_object_t *values, size_t count);
+xpc_dictionary_create(const char * const *keys, const xpc_object_t *values, size_t count) OS_OBJECT_RETURNS_RETAINED;
 
 __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0)
 //XPC_EXPORT XPC_NONNULL1 XPC_NONNULL2
@@ -67,6 +73,6 @@ int xpc_pipe_routine(xpc_pipe_t pipe, xpc_object_t message, xpc_object_t *reply)
 
 extern mach_port_t bootstrap_port;
 
-xpc_pipe_t xpc_pipe_create_from_port(mach_port_t port, int flags);
+xpc_pipe_t xpc_pipe_create_from_port(mach_port_t port, int flags) OS_OBJECT_RETURNS_RETAINED;
 
 #endif // __XPC_H__ 

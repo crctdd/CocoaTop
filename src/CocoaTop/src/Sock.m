@@ -140,7 +140,15 @@ NSString *psGetProcessName(struct extern_proc *ep)
 
 int stack_snapshot(int pid, char *tracebuf, int bufsize, int options)
 {
-	return syscall(SYS_stack_snapshot, pid, tracebuf, bufsize, options);
+    // This legacy private stackshot ABI has no public replacement with the
+    // same output format. Resolve the optional entry point without claiming
+    // that its availability guarantees kernel support on every iOS version.
+    typedef int (*CTSyscallFunction)(int, ...);
+    static CTSyscallFunction call;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{ call = (CTSyscallFunction)dlsym(RTLD_DEFAULT, "syscall"); });
+    if (!call) { errno = ENOSYS; return -1; }
+    return call(SYS_stack_snapshot, pid, tracebuf, bufsize, options);
 }
 
 @implementation PSSockThreads
