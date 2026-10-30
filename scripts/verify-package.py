@@ -46,7 +46,16 @@ with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
             binary.write_bytes(archive.extractfile(member).read())
             slices = set(subprocess.check_output(['xcrun', 'lipo', '-archs', str(binary)], text=True).split())
             assert slices == expected_slices, (name, slices)
-            entitlements = subprocess.check_output(['ldid', '-e', str(binary)])
-            assert plistlib.loads(entitlements)['platform-application'] is True
+            # ldid emits one XML document per fat slice. Audit each slice
+            # independently rather than parsing concatenated plist documents.
+            for arch in sorted(slices):
+                thin = binary
+                if len(slices) > 1:
+                    thin = Path(tmp) / (name + '-' + arch)
+                    subprocess.run(['xcrun', 'lipo', str(binary), '-thin', arch,
+                                    '-output', str(thin)], check=True)
+                entitlements = subprocess.check_output(['ldid', '-e', str(thin)])
+                assert plistlib.loads(entitlements)['platform-application'] is True
+                print(f'{name}/{arch}: platform-application entitlement verified')
             print(f'{name}: uid=0 gid=0 mode={mode:o} archs={sorted(slices)} signed')
 print(f'PASS {scheme}: metadata, layout, resources, ownership, modes, architecture, entitlements')
