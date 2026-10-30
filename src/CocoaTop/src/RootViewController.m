@@ -71,10 +71,11 @@
 		fullScreen = !self.navigationController.navigationBarHidden;
 		// This "scrolls" tableview so that it doesn't actually move when the bars disappear
 		if (!fullScreen) {			// Show navbar & scrollbar (going out of fullscreen)
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[self setNeedsStatusBarAppearanceUpdate];
+            [self.navigationController setNeedsStatusBarAppearanceUpdate];
 			[self.navigationController setNavigationBarHidden:NO animated:NO];
 		}
-		CGSize size = [UIApplication sharedApplication].statusBarFrame.size;
+		CGSize size = self.view.window.windowScene.statusBarManager.statusBarFrame.size;
 		CGFloat slide = MIN(size.width, size.height) +
 			self.navigationController.navigationBar.frame.size.height +
 			([[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
@@ -83,16 +84,19 @@
 		[self.tableView setContentOffset:contentOffset animated:NO];
 		if (fullScreen) {			// Hide navbar & scrollbar (entering fullscreen)
 			[self.navigationController setNavigationBarHidden:YES animated:NO];
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+			[self setNeedsStatusBarAppearanceUpdate];
+            [self.navigationController setNeedsStatusBarAppearanceUpdate];
 		}
 		[self.tableView reloadData];
 //		[timer fire];
 	}
 }
 
+- (BOOL)prefersStatusBarHidden { return fullScreen; }
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+	[self setNeedsStatusBarAppearanceUpdate];
 	bool isPhone = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone;
 	[self popupMenuWithItems:@[CTLocalizedString(@"Settings"), CTLocalizedString(@"Columns"), CTLocalizedString(@"Quick Guide"), CTLocalizedString(@"About")] selected:-1 aligned:UIControlContentHorizontalAlignmentLeft];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"UIButtonBarHamburger"] style:UIBarButtonItemStylePlain
@@ -227,7 +231,7 @@
     if (@available(iOS 8, *)) {
         UIUserInterfaceSizeClass sizeClass;
         if (self.view.window == nil) {
-            sizeClass = [UIApplication sharedApplication].keyWindow.traitCollection.horizontalSizeClass;
+            sizeClass = self.view.traitCollection.horizontalSizeClass;
         } else {
             sizeClass = self.view.window.traitCollection.horizontalSizeClass;
         }
@@ -327,7 +331,7 @@
 {
 	// When configId changes, all cells are reconfigured
 	configId++;
-	columns = [PSColumn psGetShownColumnsWithWidth:UIApplication.sharedApplication.keyWindow.bounds.size.width];
+	columns = [PSColumn psGetShownColumnsWithWidth:self.view.bounds.size.width];
 	// Find sort column and create table header
 	filterColumn = [PSColumn psColumnWithTag:[[CTPreferences standardUserDefaults] integerForKey:@"FilterColumn"]];
 	[self searchBarTextDidEndEditing:filter];
@@ -416,10 +420,10 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	if ((fromInterfaceOrientation == UIInterfaceOrientationPortrait || fromInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) &&
-		(self.interfaceOrientation == UIInterfaceOrientationPortrait || self.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown))
+		(self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationPortrait || self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown))
 		return;
 	if ((fromInterfaceOrientation == UIInterfaceOrientationLandscapeLeft || fromInterfaceOrientation == UIInterfaceOrientationLandscapeRight) &&
-		(self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+		(self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
 		return;
 	[self columnConfigChanged];
 	[timer fire];
@@ -517,7 +521,9 @@
 	NSError *error = nil;
 	if (![[RootHelperManager sharedManager] terminateProcess:proc.pid signal:sig error:&error]) {
 		NSString *msg = [NSString stringWithFormat:CTLocalizedString(@"Error %d while terminating app"), (int)error.code];
-		[[[UIAlertView alloc] initWithTitle:proc.name message:msg delegate:nil cancelButtonTitle:CTLocalizedString(@"OK") otherButtonTitles:nil] show];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:proc.name message:msg preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:CTLocalizedString(@"OK") style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
 	}
 	// Refresh immediately to show process termination
 	tableView.editing = NO;

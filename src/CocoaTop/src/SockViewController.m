@@ -63,10 +63,11 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		fullScreen = !self.navigationController.navigationBarHidden;
 		// This "scrolls" tableview so that it doesn't actually move when the bars disappear
 		if (!fullScreen) {			// Show navbar & scrollbar (going out of fullscreen)
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[self setNeedsStatusBarAppearanceUpdate];
+            [self.navigationController setNeedsStatusBarAppearanceUpdate];
 			[self.navigationController setNavigationBarHidden:NO animated:NO];
 		}
-		CGSize size = [UIApplication sharedApplication].statusBarFrame.size;
+		CGSize size = self.view.window.windowScene.statusBarManager.statusBarFrame.size;
 		CGFloat slide = MIN(size.width, size.height) +
 			self.navigationController.navigationBar.frame.size.height +
 			([[CTPreferences standardUserDefaults] boolForKey:@"ShowHeader"] ? self.tableView.sectionHeaderHeight : 0);
@@ -75,11 +76,14 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 		[self.tableView setContentOffset:contentOffset animated:NO];
 		if (fullScreen) {			// Hide navbar & scrollbar (entering fullscreen)
 			[self.navigationController setNavigationBarHidden:YES animated:NO];
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+			[self setNeedsStatusBarAppearanceUpdate];
+            [self.navigationController setNeedsStatusBarAppearanceUpdate];
 		}
 		[timer fire];
 	}
 }
+
+- (BOOL)prefersStatusBarHidden { return fullScreen; }
 
 - (void)viewDidLoad
 {
@@ -251,10 +255,10 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	if ((fromInterfaceOrientation == UIInterfaceOrientationPortrait || fromInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) &&
-		(self.interfaceOrientation == UIInterfaceOrientationPortrait || self.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown))
+		(self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationPortrait || self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown))
 		return;
 	if ((fromInterfaceOrientation == UIInterfaceOrientationLandscapeLeft || fromInterfaceOrientation == UIInterfaceOrientationLandscapeRight) &&
-		(self.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+		(self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationLandscapeLeft || self.view.window.windowScene.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
 		return;
 	// Size changed - need to redraw
 	[self configureMode];
@@ -354,7 +358,9 @@ NSString *ColumnModeName[ColumnModes] = {@"Summary", @"Threads", @"Open files", 
 					  (viewMode == ColumnModeModules) ? sock.name : sock.description;
 	if (viewMode == ColumnModePorts)
 		message = [[message stringByReplacingOccurrencesOfString:@" <" withString:@"\n<"] stringByReplacingOccurrencesOfString:@" >" withString:@"\n>"];
-	[[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:CTLocalizedString(@"OK") otherButtonTitles:nil] show];
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:CTLocalizedString(@"OK") style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark -

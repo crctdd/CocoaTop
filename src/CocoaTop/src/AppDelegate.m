@@ -2,7 +2,17 @@
 #import "RootViewController.h"
 #import "RootHelperManager.h"
 
+@interface CTNavigationController : UINavigationController
+@end
+@implementation CTNavigationController
+- (UIViewController *)childViewControllerForStatusBarHidden { return self.topViewController; }
+- (UIViewController *)childViewControllerForStatusBarStyle { return self.topViewController; }
+@end
+
 @implementation RootTabMaskController
+- (UIViewController *)childViewControllerForStatusBarHidden { return controller; }
+- (UIViewController *)childViewControllerForStatusBarStyle { return controller; }
+
 
 -(instancetype)init {
     if (self = [super init]) {
@@ -73,7 +83,7 @@
 	// Create UIWindow
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	// Allocate the navigation controller
-	self.navigationController = [[UINavigationController alloc] initWithRootViewController:[RootTabMaskController new]];
+	self.navigationController = [[CTNavigationController alloc] initWithRootViewController:[RootTabMaskController new]];
 	// Set the navigation controller as the window's root view controller and display.
 	self.window.rootViewController = self.navigationController;
 	[self.window makeKeyAndVisible];

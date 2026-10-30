@@ -100,17 +100,15 @@
 	return interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown;
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	if (buttonIndex == 1) {
-		[[CTPreferences standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
-		[self.tableView reloadData];
-	}
-}
-
 - (IBAction)factoryReset
 {
-	[[[UIAlertView alloc] initWithTitle:CTLocalizedString(@"Reset") message:CTLocalizedString(@"Reset settings to default values?") delegate:self cancelButtonTitle:CTLocalizedString(@"Cancel") otherButtonTitles:CTLocalizedString(@"OK"), nil] show];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:CTLocalizedString(@"Reset") message:CTLocalizedString(@"Reset settings to default values?") preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:CTLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:CTLocalizedString(@"OK") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [[CTPreferences standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+        [self.tableView reloadData];
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)viewDidLoad
