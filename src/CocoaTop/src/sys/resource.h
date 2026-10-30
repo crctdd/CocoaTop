@@ -64,6 +64,11 @@
 #ifndef _SYS_RESOURCEEX_H_
 #define	_SYS_RESOURCEEX_H_
 
+/* Load the current SDK definitions before considering the legacy fallback.
+ * This file is on the include path as sys/resource.h; include_next avoids
+ * recursively selecting this compatibility header and duplicating Darwin's
+ * rusage types while Clang builds its system modules. */
+#include_next <sys/resource.h>
 #include <sys/cdefs.h>
 #include <sys/_types.h>
 
