@@ -14,6 +14,7 @@
 #import <stdlib.h>
 #import <stdio.h>
 #import <string.h>
+#import <limits.h>
 
 #define CT_MAX_SHM (256U * 1024U * 1024U)
 static void *CTHelperQueueKey = &CTHelperQueueKey;
@@ -33,6 +34,7 @@ static int64_t CTMonotonicMS(void) {
     int _socketFD;
     void *_mapping;
     size_t _capacity;
+    NSData *_lastSnapshot;
 }
 @end
 
@@ -66,6 +68,7 @@ static int64_t CTMonotonicMS(void) {
     }
     if (_mapping) { munmap(_mapping, _capacity); _mapping = NULL; }
     _capacity = 0;
+    _lastSnapshot = nil;
 }
 - (NSString *)readLine {
     char line[128];
@@ -192,12 +195,12 @@ static int64_t CTMonotonicMS(void) {
     if (!success && outError) *outError = CTHelperError(failure ?: EIO);
     return success;
 }
-- (NSString *)requestProcessList {
+- (NSString *)requestLine:(const char *)command {
     if (_socketFD < 0) { errno = ENOTCONN; return nil; }
-    const char command[] = "getprocs\n";
+    size_t length = strlen(command);
     size_t sent = 0;
-    while (sent < sizeof(command) - 1) {
-        ssize_t n = write(_socketFD, command + sent, sizeof(command) - 1 - sent);
+    while (sent < length) {
+        ssize_t n = write(_socketFD, command + sent, length - sent);
         if (n < 0 && errno == EINTR) continue;
         if (n <= 0) {
             int error = n ? errno : EPIPE;
@@ -208,6 +211,9 @@ static int64_t CTMonotonicMS(void) {
     NSString *line = [self readLine];
     if (!line) { int error = errno; [self cleanup]; errno = error; }
     return line;
+}
+- (NSString *)requestProcessList {
+    return [self requestLine:"getprocs\n"];
 }
 - (void)sendCommand:(NSString *)command completion:(RHCommandCompletion)completion {
     dispatch_async(_ioQueue, ^{
@@ -235,9 +241,45 @@ static int64_t CTMonotonicMS(void) {
             failure = EPROTO; [self cleanup]; return;
         }
         snapshot = [NSData dataWithBytes:self->_mapping length:(NSUInteger)count * sizeof(struct kinfo_proc)];
+        self->_lastSnapshot = snapshot;
     }];
     if (!snapshot && outError) *outError = CTHelperError(failure ?: EIO);
     return snapshot;
+}
+- (BOOL)terminateProcess:(pid_t)pid signal:(int)sig error:(NSError **)outError {
+    __block int failure = 0;
+    [self onQueue:^{
+        if (pid <= 1 || (sig != SIGTERM && sig != SIGKILL)) { failure = EINVAL; return; }
+        if (pid == getpid() || pid == self->_helperPID) { failure = EPERM; return; }
+        if (self->_socketFD < 0) { failure = ENOTCONN; return; }
+        const struct kinfo_proc *items = self->_lastSnapshot.bytes;
+        NSUInteger count = self->_lastSnapshot.length / sizeof(*items);
+        const struct kinfo_proc *target = NULL;
+        for (NSUInteger i = 0; i < count; i++) {
+            if (items[i].kp_proc.p_pid == pid) { target = &items[i]; break; }
+        }
+        if (!target) { failure = ESRCH; return; }
+        long long sec = (long long)target->kp_proc.p_starttime.tv_sec;
+        long usec = (long)target->kp_proc.p_starttime.tv_usec;
+        if (sec <= 0 || usec < 0 || usec > 999999) { failure = ESTALE; return; }
+        char command[64];
+        int length = snprintf(command, sizeof(command), "signal %d %d %lld %ld\n",
+                              (int)pid, sig, sec, usec);
+        if (length < 0 || (size_t)length >= sizeof(command)) { failure = EOVERFLOW; return; }
+        NSString *line = [self requestLine:command];
+        if (!line) { failure = errno; return; }
+        if (![line hasPrefix:@"SIGNAL "]) { failure = EPROTO; [self cleanup]; return; }
+        const char *text = line.UTF8String + 7;
+        char *end = NULL;
+        errno = 0;
+        unsigned long code = strtoul(text, &end, 10);
+        if (errno || text[0] < '0' || text[0] > '9' || *end || code > INT_MAX) {
+            failure = EPROTO; [self cleanup]; return;
+        }
+        failure = (int)code;
+    }];
+    if (failure && outError) *outError = CTHelperError(failure);
+    return failure == 0;
 }
 - (void)stopHelper {
     [self onQueue:^{ [self cleanup]; }];

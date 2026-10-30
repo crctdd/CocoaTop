@@ -11,6 +11,7 @@
 #import "Proc.h"
 #import "ProcArray.h"
 #import "AppDelegate.h"
+#import "RootHelperManager.h"
 
 #define NTSTAT_PREQUERY_INTERVAL	0.1
 
@@ -513,10 +514,9 @@
 - (void)tableView:(UITableView *)tableView sendSignal:(int)sig toProcessAtIndexPath:(NSIndexPath *)indexPath
 {
 	PSProc *proc = procs[indexPath.row];
-	// task_for_pid(mach_task_self(), pid, &task)
-	// task_terminate(task)
-	if (kill(proc.pid, sig)) {
-		NSString *msg = [NSString stringWithFormat:CTLocalizedString(@"Error %d while terminating app"), errno];
+	NSError *error = nil;
+	if (![[RootHelperManager sharedManager] terminateProcess:proc.pid signal:sig error:&error]) {
+		NSString *msg = [NSString stringWithFormat:CTLocalizedString(@"Error %d while terminating app"), (int)error.code];
 		[[[UIAlertView alloc] initWithTitle:proc.name message:msg delegate:nil cancelButtonTitle:CTLocalizedString(@"OK") otherButtonTitles:nil] show];
 	}
 	// Refresh immediately to show process termination

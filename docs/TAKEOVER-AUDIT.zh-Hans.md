@@ -11,11 +11,11 @@
 
 ## 高权限组件与限制
 
-原代码采用 persona 提权启动内嵌助手。此次从 RootWrapper.c 在 CI 构建助手，安装为 root:wheel / 4755，GUI 保持 0755。助手只允许读取进程列表，不执行任意 shell 命令。启动校验 owner / mode，并以 READY 握手验证有效 root 权限；部署时必须确认越狱环境实际允许 setuid 与对应签名。
+原代码采用 persona 提权启动内嵌助手。此次从 RootWrapper.c 在 CI 构建助手，安装为 root:wheel / 4755，GUI 保持 0755。助手提供读取进程列表及受限 SIGTERM / SIGKILL 接口，不执行任意 shell 命令。信号请求只接受 PID > 1，拒绝 launchd、助手及 GUI 自身，不接受进程组；以刷新快照的进程开始时间和内核查询交叉验证目标身份。启动校验 owner / mode，并以 READY 握手验证有效 root 权限；部署时必须确认越狱环境实际允许 setuid 与对应签名。
 
 新增串行通信、响应超时、共享内存名称传递、长度及所有者校验、独立拥有的进程快照，避免负数计数、失效映射和未终止日志缓冲区。应用启动失败不再静默挂起，而是显示诊断。
 
-**仍需设备验证的权限边界**：GUI 的 SIGTERM / SIGKILL 仍由原有 kill() 路径发出，mobile 身份对其他 UID 的进程操作可能失败；不能把 root 列表助手描述为完整 root RPC。task_for_pid、线程、网络统计等细节也受越狱补丁、entitlement 和系统版本限制。未擅自把整个 GUI 设为 root。
+**仍需设备验证的权限边界**：GUI 的 SIGTERM / SIGKILL 现通过受限 root helper RPC 发出，错误按 POSIX errno 返回，不重试结果未知的信号请求。内核及越狱环境仍可能拒绝操作；查询开始时间与 kill() 并非原子操作，只能降低而不能彻底消除 PID 复用窗口。task_for_pid、线程、网络统计等细节也受越狱补丁、entitlement 和系统版本限制。未把整个 GUI 设为 root。
 
 ## 配置与数据
 

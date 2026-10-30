@@ -16,6 +16,9 @@ typedef void(^RHCommandCompletion)(NSString * _Nullable stdoutString,
 - (void)sendCommand:(NSString *)command completion:(RHCommandCompletion)completion;
 /// An owned, immutable snapshot. Never exposes a mapping that cleanup can unmap.
 - (nullable NSData *)processSnapshotWithError:(NSError * _Nullable * _Nullable)error;
+/// SIGTERM/SIGKILL only; checks identity against the last successful refresh snapshot.
+/// Returns POSIX errors (including ESTALE/ESRCH); never retries an uncertain signal RPC.
+- (BOOL)terminateProcess:(pid_t)pid signal:(int)signal error:(NSError * _Nullable * _Nullable)error;
 - (void)stopHelper;
 @end
 
