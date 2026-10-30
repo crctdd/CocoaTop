@@ -2,7 +2,9 @@
 
 #ifndef __XPC_H__
 #define __XPC_H__
-#include "xpc/base.h"
+/* Use the complete SDK/Theos public XPC declarations, not the legacy
+ * base-only shim (which neither defines XPC objects nor the umbrella guard). */
+#include <xpc/xpc.h>
 
 typedef void *xpc_pipe_t;
 

@@ -2,7 +2,7 @@ include $(THEOS)/makefiles/common.mk
 
 APPLICATION_NAME = CocoaTop
 CocoaTop_FILES = $(wildcard src/*.m)
-CocoaTop_CFLAGS = -fobjc-arc -Isrc -IIOKit.framework/Headers
+CocoaTop_CFLAGS = -fobjc-arc -iquote src -IIOKit.framework/Headers
 CocoaTop_FRAMEWORKS = Foundation UIKit CoreGraphics QuartzCore
 CocoaTop_PRIVATE_FRAMEWORKS = IOKit
 CocoaTop_CODESIGN_FLAGS = -Sentitlements.xml
