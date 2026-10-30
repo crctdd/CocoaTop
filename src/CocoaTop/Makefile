@@ -15,6 +15,3 @@ CocoaTop_CFLAGS += -DCT_ROOTHIDE=0
 endif
 
 include $(THEOS_MAKE_PATH)/application.mk
-
-after-stage::
-	python3 ../../scripts/stage-resources.py "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app"

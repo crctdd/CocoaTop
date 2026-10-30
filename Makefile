@@ -16,5 +16,6 @@ SUBPROJECTS += src/CocoaTop-helper src/CocoaTop
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
 after-stage::
+	python3 scripts/stage-resources.py "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app"
 	chmod 0755 "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app/CocoaTop"
 	chmod 4755 "$(THEOS_STAGING_DIR)/Applications/CocoaTop.app/CocoaTop-helper"
